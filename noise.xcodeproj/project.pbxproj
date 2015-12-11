@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DF788A2B1C1A48A4002CEF85 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A2A1C1A48A4002CEF85 /* main.cpp */; };
+		DF788A331C1A7AE0002CEF85 /* updater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A321C1A7AE0002CEF85 /* updater.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		DF788A271C1A48A4002CEF85 /* noise */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = noise; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF788A2A1C1A48A4002CEF85 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		DF788A311C1A75C5002CEF85 /* noise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = noise.h; sourceTree = "<group>"; };
+		DF788A321C1A7AE0002CEF85 /* updater.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = updater.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				DF788A2A1C1A48A4002CEF85 /* main.cpp */,
+				DF788A311C1A75C5002CEF85 /* noise.h */,
+				DF788A321C1A7AE0002CEF85 /* updater.cpp */,
 			);
 			path = noise;
 			sourceTree = "<group>";
@@ -119,6 +124,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF788A2B1C1A48A4002CEF85 /* main.cpp in Sources */,
+				DF788A331C1A7AE0002CEF85 /* updater.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +213,7 @@
 		DF788A2F1C1A48A4002CEF85 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -214,6 +221,7 @@
 		DF788A301C1A48A4002CEF85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
