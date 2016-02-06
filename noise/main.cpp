@@ -7,15 +7,19 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <rocksdb/db.h>
 
 #include "noise.h"
 
 using Noise::Updater;
 using Noise::OpenOptions;
+
+extern char **environ;
 
 int main(int argc, char * const argv[]) {
     int c;
@@ -24,7 +28,10 @@ int main(int argc, char * const argv[]) {
     OpenOptions openOptions = OpenOptions::None;
     int dodelete = 0;
     Updater updater;
-    while ((c = getopt(argc, argv, "cd")) != -1)
+
+    std::ifstream in;
+
+    while ((c = getopt(argc, argv, "cdf:")) != -1)
         switch (c)
     {
         case 'c':
@@ -35,14 +42,27 @@ int main(int argc, char * const argv[]) {
             dodelete = 1;
             break;
 
+        case 'f':
+        {
+            in.open(optarg);
+            if (!in.is_open()) {
+                fprintf(stderr, "Uable to open '-%s'.\n", optarg);
+                return 1;
+            }
+            std::cin.rdbuf(in.rdbuf()); //redirect std::cin
+            break;
+        }
+
         case '?':
-            if (isprint (optopt))
-                fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+            if (optopt == 'f')
+                fprintf(stderr, "Option '-f' requires a filename.\n");
+            else if (isprint (optopt))
+                fprintf(stderr, "Unknown option '-%c'.\n", optopt);
             else
                 fprintf(stderr,
-                        "Unknown option character `\\x%x'.\n",
+                        "Unknown option character '\\x%x'.\n",
                         optopt);
-            break;
+            return 1;
         default:
             abort();
     }
@@ -57,14 +77,26 @@ int main(int argc, char * const argv[]) {
     if (dodelete)
         Updater::Delete(argv[optind]);
 
-    std::string error = updater.Open(argv[optind]);
+    std::string error = updater.Open(argv[optind], openOptions);
 
     if (error.length()) {
-        std::cout << "Error opening index (" << argv[optind] << "):" << error;
+        fprintf(stderr, "Error opening index (%s): %s\n", argv[optind], error.c_str());
+        return 1;
     }
 
     // stream shredded docs into in index
 
-    printf("Hello, World!\n");
+    while (!std::cin.eof()) {
+        std::string json;
+        std::getline(std::cin, json);
+        if (!updater.Add(json, error)) {
+            fprintf(stderr, "Error processing document: %s\n", error.c_str());
+        }
+    }
+
+    rocksdb::Status status = updater.Flush();
+
+    assert(status.ok());
+
     return 0;
 }

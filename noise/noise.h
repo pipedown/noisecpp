@@ -9,9 +9,11 @@
 #ifndef noise_h
 #define noise_h
 
-// this is a stupid trick to work around Xcode indenting inside parens
+// this is a stupid trick to work around Xcode editor indenting inside parens
 #define namespace_Noise namespace Noise {
 #define namespace_Noise_end };
+
+#include "json_shred.hpp"
 
 namespace_Noise
 
@@ -20,23 +22,31 @@ enum OpenOptions {
     Create
 };
 
-class Updater
+class Index
 {
 private:
     rocksdb::DB* rocks;
+    rocksdb::WriteOptions wopt;
+    rocksdb::ReadOptions  ropt;
+
+    rocksdb::WriteBatch batch;
+    JsonShredder shred;
+
+    uint64_t highdocseq;
+    std::map<std::string,std::string> idStrToIdSeq;
 
 public:
-    Updater();
-    ~Updater();
+    Index();
+    ~Index();
 
 
     std::string Open(const std::string& name, OpenOptions opt=None);
 
     static void Delete(const std::string& name);
 
-    void Add(const std::string& json);
+    bool Add(const std::string& json, std::string* err);
     
-    void Flush();
+    rocksdb::Status Flush();
 };
 
 

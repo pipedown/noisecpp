@@ -1,0 +1,21 @@
+package records;
+
+message header {
+    required uint64 version = 1; 
+    required uint64 high_seq = 2; 
+}
+
+message wordinfo {
+    required uint64 stemmedOffset = 1;
+    required int64 suffixOffset = 2;
+    required string suffixText = 3;
+}
+
+message arrayoffsets_to_wordinfo {
+    repeated uint64 arrayoffsets = 1;
+    repeated wordinfo wordinfos = 2;
+}
+
+message payload {
+    repeated arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+}
