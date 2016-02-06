@@ -1,0 +1,3 @@
+// a[b = "B1 B2" and c = "C1" ]
+// a[1].b=b1 a[0]b
+"c" FIELD "C1" EQUALS "b" FIELD "B2" EQUALS AND "a" ARRAY
