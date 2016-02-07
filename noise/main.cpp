@@ -16,21 +16,20 @@
 
 #include "noise.h"
 
-using Noise::Updater;
+using Noise::Index;
 using Noise::OpenOptions;
 
 extern char **environ;
 
 int main(int argc, char * const argv[]) {
-    int c;
-    int index;
     opterr = 0;
     OpenOptions openOptions = OpenOptions::None;
     int dodelete = 0;
-    Updater updater;
+    Index index;
 
     std::ifstream in;
 
+    int c;
     while ((c = getopt(argc, argv, "cdf:")) != -1)
         switch (c)
     {
@@ -67,17 +66,17 @@ int main(int argc, char * const argv[]) {
             abort();
     }
 
-    for (index = optind + 1; index < argc; index++)
-        fprintf(stderr, "Ignoring argument %s\n", argv[index]);
+    for (int i = optind + 1; i < argc; i++)
+        fprintf(stderr, "Ignoring argument %s\n", argv[i]);
 
     if (optind >= argc) {
         fprintf(stderr, "Missing index directory argument\n");
         return 1;
     }
     if (dodelete)
-        Updater::Delete(argv[optind]);
+        Index::Delete(argv[optind]);
 
-    std::string error = updater.Open(argv[optind], openOptions);
+    std::string error = index.Open(argv[optind], openOptions);
 
     if (error.length()) {
         fprintf(stderr, "Error opening index (%s): %s\n", argv[optind], error.c_str());
@@ -89,12 +88,12 @@ int main(int argc, char * const argv[]) {
     while (!std::cin.eof()) {
         std::string json;
         std::getline(std::cin, json);
-        if (!updater.Add(json, error)) {
+        if (!index.Add(json, &error)) {
             fprintf(stderr, "Error processing document: %s\n", error.c_str());
         }
     }
 
-    rocksdb::Status status = updater.Flush();
+    rocksdb::Status status = index.Flush();
 
     assert(status.ok());
 

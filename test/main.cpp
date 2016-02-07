@@ -13,23 +13,27 @@
 #include <sstream>
 #include <fstream>
 #include "query.hpp"
+#include "results.hpp"
 
 
 
 int main(int argc, const char * argv[]) {
-    std::ifstream qeurytextstrem("testqueries.txt");
-    std::string qeurytex((std::istreambuf_iterator<char>(qeurytextstrem)),
+    // Really, this much code to read file into a string?
+    std::ifstream querystream("testqueries.txt");
+    std::string querystr((std::istreambuf_iterator<char>(querystream)),
                     std::istreambuf_iterator<char>());
 
-    printf("%s\n", qeurytex.c_str());
+    printf("%s\n", querystr.c_str());
 
 
-    Noise::Query query(qeurytex);
+    Noise::Query query(querystr);
 
-    unique_ptr<Noise::Results> results(query.execute(rss));
+    Index index("someindex");
+    unique_ptr<Noise::Results> results(index.Execute(query));
 
-    for(auto doc : results) {
-
+    string id = results->GetNext();
+    while(id.size()) {
+        printf("id: %s\n", querystr.c_str());
     }
 
     return 0;

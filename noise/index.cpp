@@ -20,7 +20,7 @@ Index::Index() : rocks(nullptr) {
     wopt.sync = true;
 }
 
-Index::Index() {
+Index::~Index() {
     delete rocks;
 }
 

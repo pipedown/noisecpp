@@ -12,36 +12,35 @@
 #include <stdio.h>
 #include "noise.h"
 
-
 namespace_Noise
 
-class DocResult;
+struct DocResult {
+    std::string id;
+    std::list<std::vector<uint64_t> > array_paths;
+
+    void TruncateArrayPaths(size_t array_path_depth);
+    bool IntersectArrayPaths(const DocResult& other);
+};
 
 class Results {
     std::unique_ptr<QueryRuntimeFilter> filter;
-    bool first_has_been_called;
-    Results(std::unique_ptr<QueryRuntimeFilter>& filter) {
+    bool first_has_been_called = false;
 
-    }
+    Results(std::unique_ptr<QueryRuntimeFilter>& _filter) :
+        filter(std::move(_filter)) {}
 
-    std::string get_next() {
-
+    std::string GetNext() {
+        static std::string emptystr("");
+        std::unique_ptr<DocResult> dr;
         if (!first_has_been_called) {
             first_has_been_called = true;
-            std::unique_ptr<DocResult> dr (filter.FirstResult(""));
-            if (dr) {
-                
-            }
-        }
-            filter.NextResult()
-            return ( ?
-        }
-            filter
-            virtual unique_ptr<DocResult> FirstResult(std::string& startId);
 
-            // returns the doc next after previous
-            virtual unique_ptr<DocResult> NextResult();
-        };
+            dr = filter->FirstResult(emptystr);
+        } else {
+            dr = filter->NextResult();
+        }
+
+        return dr ? dr->id : emptystr;
     }
 };
 

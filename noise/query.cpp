@@ -14,6 +14,7 @@
 #include "records.pb.h"
 #include <rocksdb/db.h>
 #include "query.hpp"
+#include "results.hpp"
 
 namespace_Noise
 
@@ -147,31 +148,7 @@ std::unique_ptr<ASTNode> BuildTree(std::istream& tokens) {
 
 
 
-struct DocResult {
-    std::string id;
-    std::list<std::vector<uint64_t> > array_paths;
 
-    void TruncateArrayPaths(size_t array_path_depth) {
-        for(auto ap : array_paths)
-            ap.resize(array_path_depth);
-    }
-    bool IntersectArrayPaths(const DocResult& other) {
-        for (auto ap = array_paths.begin(); ap != array_paths.end(); ap++) {
-            bool found = false;
-            for (auto ap_other : array_paths) {
-                if (*ap == ap_other) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                auto del = ap++;
-                array_paths.remove(*del);
-            }
-        }
-        return array_paths.size() > 0;
-    }
-};
 
 
 

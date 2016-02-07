@@ -12,13 +12,11 @@
 #include <stdio.h>
 #include "noise.h"
 
-namespace rocksdb {
-    class DB;
-}
 
 namespace_Noise
 
 class DocResult;
+class Results;
 
 class QueryRuntimeFilter {
 public:
@@ -33,12 +31,11 @@ public:
 
 class Query {
 
-    std::unique_ptr<ASTNode> BuildTree(std::istream& tokens);
 
 public:
     Query(std::string& query);
 
-    std::unique_ptr<ResultStream> Execute(rocksdb::DB* Snapshot);
+    std::unique_ptr<Results> Execute(Index* index);
 };
 
 namespace_Noise_end
