@@ -95,6 +95,7 @@
 		DFE82D3F1C65C6A000B5E17E /* results.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = results.cpp; sourceTree = "<group>"; };
 		DFE82D401C65C6A000B5E17E /* results.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = results.hpp; sourceTree = "<group>"; };
 		DFE82D441C65E9C300B5E17E /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
+		DFE82D461C7583DC00B5E17E /* stemmed_key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stemmed_key.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +156,7 @@
 				DFE82D401C65C6A000B5E17E /* results.hpp */,
 				DF788A411C1AC5BA002CEF85 /* json_shred.cpp */,
 				DF788A421C1AC5BA002CEF85 /* json_shred.hpp */,
+				DFE82D461C7583DC00B5E17E /* stemmed_key.h */,
 				DF788A351C1A9309002CEF85 /* records.proto */,
 				DF788A441C1ACE7A002CEF85 /* porter.c */,
 				DF788A461C1ACE81002CEF85 /* porter.h */,

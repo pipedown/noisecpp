@@ -8,8 +8,8 @@
 
 #include <stdio.h>
 #include <string>
+#include <vector>
 
-#include <rocksdb/db.h>
 #include "noise.h"
 #include "records.pb.h"
 #include "json_shred.hpp"
@@ -70,6 +70,7 @@ void Index::Delete(const std::string& name) {
 bool Index::Add(const std::string& json, std::string* err)
 {
     std::string id;
+    JsonShredder shred;
     if (shred.Shred(highdocseq + 1, json, &id, err)) {
         idStrToIdSeq[std::string("I") + id] = "S" + std::to_string(++highdocseq);
         shred.AddToBatch(&batch);

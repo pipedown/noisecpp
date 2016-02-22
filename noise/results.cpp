@@ -8,9 +8,10 @@
 
 #include <vector>
 #include <list>
+#include <string>
+
 #include "query.hpp"
 #include "results.hpp"
-#include "query.hpp"
 
 
 namespace_Noise
@@ -23,7 +24,7 @@ void DocResult::TruncateArrayPaths(size_t array_path_depth) {
 bool DocResult::IntersectArrayPaths(const DocResult& other) {
     for (auto ap = array_paths.begin(); ap != array_paths.end(); ap++) {
         bool found = false;
-        for (auto ap_other : array_paths) {
+        for (auto ap_other : other.array_paths) {
             if (*ap == ap_other) {
                 found = true;
                 break;
@@ -37,5 +38,4 @@ bool DocResult::IntersectArrayPaths(const DocResult& other) {
     return array_paths.size() > 0;
 }
 
-
-namespace_Noise_end
+ namespace_Noise_end
