@@ -31,8 +31,7 @@ int main(int argc, char * const argv[]) {
 
     int c;
     while ((c = getopt(argc, argv, "cdf:")) != -1)
-        switch (c)
-    {
+        switch (c) {
         case 'c':
             openOptions = OpenOptions::Create;
             break;
@@ -94,6 +93,17 @@ int main(int argc, char * const argv[]) {
     }
 
     rocksdb::Status status = index.Flush();
+
+
+    rocksdb::ReadOptions read;
+    rocksdb::Iterator* i = index.GetDB()->NewIterator(read);
+
+    i->SeekToFirst();
+
+    while (i->Valid()) {
+        printf("key: %s len: %zu\n", i->key().data(), i->key().size());
+        i->Next();
+    }
 
     assert(status.ok());
 

@@ -1,4 +1,3 @@
-// a[b = "B1 B2" and c = "C1" ]
-//d[] = "d1"
-//d[= "d1"]
-"c" FIELD "C1" EQUALS "b" FIELD "B2" EQUALS AND "a" ARRAY
+//{"_id":"foo1", "A":[{"B":"b2","C":[{"D":"d2"}]},{"B": "b1","C":"c2"}]}
+// A[B = "B2" and C[ D = "D1" ]]
+"B" FIELD "B2" EQUALS "D" FIELD "D1" EQUALS "C" ARRAY AND "A" ARRAY

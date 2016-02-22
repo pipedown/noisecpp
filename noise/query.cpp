@@ -6,6 +6,7 @@
 //  Copyright © 2015 Damien Katz. All rights reserved.
 //
 
+#include <iostream>
 #include <stack>
 #include <string>
 #include <set>
@@ -48,21 +49,6 @@ static const std::string emptystr("");
  */
 
 
-struct ASTNode {
-    enum Type
-    {
-        UNKNOWN,
-        FIELD,
-        EQUALS,
-        AND,
-        ARRAY,
-        LITERAL,
-    };
-    Type type;
-    std::string value;
-    std::vector<std::unique_ptr<ASTNode> > children;
-
-};
 
 class ExactWordMatchFilter : public QueryRuntimeFilter {
     size_t stemmed_offset_;
@@ -78,9 +64,9 @@ public:
                          StemmedKeyBuilder& key_build)
         : iter_(std::move(iter)), stemmed_offset_(stemmed_word.stemmed_offset),
           suffix_(stemmed_word.suffix, stemmed_word.suffix_len),
-          key_build_(key_build)
+          key_build_(key_build), suffix_offset_(stemmed_word.suffix_offset)
     {
-        key_build_.PushObjectKey(stemmed_word.stemmed,
+        key_build_.PushWord(stemmed_word.stemmed,
                                  stemmed_word.stemmed_len);
     }
 
@@ -116,14 +102,19 @@ public:
             // remove prefix from id as it should be
             key.remove_prefix(key_build_.Key().size());
 
+            std::string data = iter_->value().ToString();
 
+            std::cout << "data:" << data << " len: " << data.length() << "\n";
 
             records::payload payload;
-            payload.ParseFromArray(iter_->value().data(),
-                                   (int)iter_->value().size());
+            bool b = payload.ParseFromArray(data.c_str(),
+                                   (int)data.length());
 
-            for (auto& aos_wis : payload.arrayoffsets_to_wordinfos()) {
-                for (auto& wi : aos_wis.wordinfos()) {
+            for (auto aos_wis : payload.arrayoffsets_to_wordinfos()) {
+                for (auto wi : aos_wis.wordinfos()) {
+                    std::cout << "stemmedoffset: " << wi.stemmedoffset() <<
+                                " suffixoffset: " << wi.suffixoffset() <<
+                                " suffixtext: " << wi.suffixtext() <<"\n";
                     if (stemmed_offset_ == wi.stemmedoffset() &&
                         suffix_offset_ == wi.suffixoffset() &&
                         suffix_ == wi.suffixtext()) {
@@ -157,11 +148,12 @@ class SentenceMatchFilter : public QueryRuntimeFilter {
 class AndFilter : public QueryRuntimeFilter {
     unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters_;
     std::vector<unique_ptr<QueryRuntimeFilter> >::iterator filter_;
-    size_t match_array_depth;
+    size_t match_array_depth_;
 public:
     AndFilter(unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > >& filters,
-              size_t _MatchArrayDepth)
-        : filter_(filters->begin()), filters_(std::move(filters)) {}
+              size_t match_array_depth)
+        : filters_(std::move(filters)), filter_(filters_->begin()),
+          match_array_depth_(match_array_depth) {}
 
     virtual std::unique_ptr<DocResult> FirstResult(uint64_t advance) {
         auto base_result = filter_->get()->FirstResult(advance);
@@ -173,19 +165,18 @@ public:
     }
 
     unique_ptr<DocResult> Result(unique_ptr<DocResult>& base_result) {
-        size_t matchesNeededCount = filters_->size() - 1;
-        base_result->TruncateArrayPaths(match_array_depth);
-        if (base_result == nullptr)
-            return nullptr;
+        size_t matchesNeededCount = filters_->size();
         while (true) {
+            if (base_result == nullptr)
+                return nullptr;
+            base_result->TruncateArrayPaths(match_array_depth_);
+            filter_++;
             if (filter_ == filters_->end())
                 filter_ = filters_->begin();
-            else
-                filter_++;
             auto next_result = filter_->get()->FirstResult(base_result->seq);
             if (next_result == nullptr)
                 return nullptr;
-            next_result->TruncateArrayPaths(match_array_depth);
+            next_result->TruncateArrayPaths(match_array_depth_);
             if (base_result->seq == next_result->seq) {
                 // got a potential match. intersect paths
                 if (base_result->IntersectArrayPaths(*next_result)) {
@@ -196,12 +187,12 @@ public:
                 } else {
                     //no way this doc is a match. get next candidate doc
                     base_result = filter_->get()->NextResult();
-                    matchesNeededCount = filters_->size() - 1;
+                    matchesNeededCount = filters_->size();
                 }
             } else {
                 // no way this doc is a match. we already have next candidate
                 base_result = std::move(next_result);
-                matchesNeededCount = filters_->size() - 1;
+                matchesNeededCount = filters_->size();
             }
         }
     }
@@ -256,7 +247,10 @@ std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
                 filters->emplace_back(new ExactWordMatchFilter(itor, stem, key));
             }
             key.Pop(StemmedKeyBuilder::ObjectKey);
-            return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
+            if (filters->size() == 1)
+                return std::move(filters->front());
+            else
+                return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
                                                                  array_depth));
 
         }
@@ -272,12 +266,14 @@ std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
         }
 
         case ASTNode::ARRAY: {
+            key.PushObjectKey(node->value);
             key.PushArray();
             unique_ptr<QueryRuntimeFilter> ret(WalkAST(ic,
                                                          key,
                                                          node->children[0].get(),
                                                          array_depth + 1));
             key.Pop(StemmedKeyBuilder::Array);
+            key.Pop(StemmedKeyBuilder::ObjectKey);
             return ret;
         }
         case ASTNode::FIELD:
@@ -316,10 +312,13 @@ std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
     while (std::getline(tokens, token, ' ')) {
         node = std::unique_ptr<ASTNode>(new ASTNode);
         node->value = token;
-        switch (token.front()) {
+        char c = token.front();
+        switch (c) {
             case 'F':
                 assert(token == "FIELD");
                 node->type = ASTNode::FIELD;
+                node->value = stack.top()->value;
+                stack.pop();
                 break;
 
             case 'E':
@@ -353,11 +352,12 @@ std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
 
             case '"':
                 assert(token.back() == '"' && token.size() > 1);
-                node->type = ASTNode::ARRAY;
+                node->type = ASTNode::LITERAL;
                 // NOTE: does NOT unescape the string, just strips off front and end quote
                 node->value = {token.begin()+1, token.end()-1};
                 break;
-
+                
+            case '\n':
             case '/':
                 // comment line, skip
                 std::getline(tokens, token);

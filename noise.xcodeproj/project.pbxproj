@@ -23,6 +23,7 @@
 		DF788A451C1ACE7A002CEF85 /* porter.c in Sources */ = {isa = PBXBuildFile; fileRef = DF788A441C1ACE7A002CEF85 /* porter.c */; };
 		DFE82D411C65C6A000B5E17E /* results.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE82D3F1C65C6A000B5E17E /* results.cpp */; };
 		DFE82D451C65E9C300B5E17E /* readme.md in Sources */ = {isa = PBXBuildFile; fileRef = DFE82D441C65E9C300B5E17E /* readme.md */; };
+		DFE82D471C7B41D300B5E17E /* results.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE82D3F1C65C6A000B5E17E /* results.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -244,6 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DFE82D471C7B41D300B5E17E /* results.cpp in Sources */,
 				DF3380731C4F405800AD95B3 /* index.cpp in Sources */,
 				DF3380741C4F405800AD95B3 /* query.cpp in Sources */,
 				DF3380761C4F405800AD95B3 /* json_shred.cpp in Sources */,

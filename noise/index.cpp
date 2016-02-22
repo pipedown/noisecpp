@@ -12,7 +12,9 @@
 
 #include "noise.h"
 #include "records.pb.h"
+#include "stemmed_key.h"
 #include "json_shred.hpp"
+#include "porter.h"
 
 namespace_Noise
 

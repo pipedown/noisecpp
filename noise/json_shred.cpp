@@ -149,7 +149,7 @@ static int callback_map_key(void* v, const unsigned char * keyVal,
             return 1;
         }
 
-        if (keyVal[0] == '_' && ctx.keybuilder.SegmentsCount() == 0) {
+        if (keyVal[0] == '_' && ctx.keybuilder.SegmentsCount() == 1) {
             // top level object and we have reserved field. do special handling
             if (keyLen == 3 && keyVal[1] == 'i' && keyVal[2] == 'd') {
                 ctx.expectIdString = true;
@@ -335,22 +335,24 @@ bool JsonShredder::Shred(uint64_t docseq,
 void JsonShredder::AddToBatch(rocksdb::WriteBatch* batch) {
     records::payload pbpayload;
     for (auto wordPathInfos : ctx.map) {
-        records::arrayoffsets_to_wordinfo& pbarrayoffsets_to_wordinfo =
-                                    *pbpayload.add_arrayoffsets_to_wordinfos();
+        auto* pbarrayoffsets_to_wordinfo =
+                                    pbpayload.add_arrayoffsets_to_wordinfos();
         for (auto arrayOffsetsInfos : wordPathInfos.second) {
-            records::wordinfo& pbwordinfo =
-                                    *pbarrayoffsets_to_wordinfo.add_wordinfos();
+            auto pbwordinfo =
+                                    pbarrayoffsets_to_wordinfo->add_wordinfos();
             for (auto arrayOffset : arrayOffsetsInfos.first) {
-                pbarrayoffsets_to_wordinfo.add_arrayoffsets(arrayOffset);
+                pbarrayoffsets_to_wordinfo->add_arrayoffsets(arrayOffset);
             }
             for (auto wordinfo : arrayOffsetsInfos.second) {
-                pbwordinfo.set_stemmedoffset(wordinfo.stemmedOffset);
-                pbwordinfo.set_suffixtext(wordinfo.suffixText);
-                pbwordinfo.set_suffixoffset(wordinfo.suffixOffset);
+                pbwordinfo->set_stemmedoffset(wordinfo.stemmedOffset);
+                pbwordinfo->set_suffixtext(wordinfo.suffixText);
+                pbwordinfo->set_suffixoffset(wordinfo.suffixOffset);
             }
         }
+        std::string payload = pbpayload.SerializeAsString();
+        printf("payload: %zu %s", payload.length(), payload.c_str());
         batch->Put(wordPathInfos.first,
-                  pbarrayoffsets_to_wordinfo.SerializeAsString());
+                  payload);
     }
 }
 

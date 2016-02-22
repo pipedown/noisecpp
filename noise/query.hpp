@@ -17,15 +17,30 @@ namespace_Noise
 
 class DocResult;
 class Results;
-class ASTNode;
+
+struct ASTNode {
+    enum Type
+    {
+        UNKNOWN,
+        FIELD,
+        EQUALS,
+        AND,
+        ARRAY,
+        LITERAL,
+    };
+    Type type;
+    std::string value;
+    std::vector<std::unique_ptr<ASTNode> > children;
+
+};
 
 class QueryRuntimeFilter {
 public:
     // returns the doc at startId, or next after
-    virtual std::unique_ptr<DocResult> FirstResult(uint64_t startId);
+    virtual std::unique_ptr<DocResult> FirstResult(uint64_t startId) = 0;
 
     // returns the doc next after previous
-    virtual std::unique_ptr<DocResult> NextResult();
+    virtual std::unique_ptr<DocResult> NextResult() = 0;
 };
 
 
