@@ -7,6 +7,7 @@
 //
 
 #include <stack>
+#include <string>
 #include <set>
 #include <list>
 #include <memory>
@@ -15,6 +16,8 @@
 #include <rocksdb/db.h>
 #include "query.hpp"
 #include "results.hpp"
+#include "stemmed_key.h"
+#include "porter.h"
 
 namespace_Noise
 
@@ -24,110 +27,335 @@ class ASTLiteral;
 
 static const std::string emptystr("");
 
+/*
+ 'sometext and 23hit'
 
-class ASTNode {
-protected:
-    std::string name;
+ sometext
+ uint64 stemmedOffset 0;
+ int64 suffixOffset  8
+ string suffixText;  " "
+
+ and
+ uint64 stemmedOffset 9;
+ int64 suffixOffset  12
+ string suffixText;  " "
+
+ hit
+ uint64 stemmedOffset 15;
+ int64 suffixOffset  13
+ string suffixText;  " "
+
+ */
+
+
+struct ASTNode {
+    enum Type
+    {
+        UNKNOWN,
+        FIELD,
+        EQUALS,
+        AND,
+        ARRAY,
+        LITERAL,
+    };
+    Type type;
+    std::string value;
+    std::vector<std::unique_ptr<ASTNode> > children;
+
+};
+
+class ExactWordMatchFilter : public QueryRuntimeFilter {
+    size_t stemmed_offset_;
+    std::string suffix_;
+    size_t suffix_offset_;
+
+    StemmedKeyBuilder key_build_;
+
+    unique_ptr<rocksdb::Iterator> iter_;
 public:
-    virtual ~ASTNode() {}
-    virtual void SetName(std::string& _name) {name = _name;}
-    virtual void Initialize(std::stack<std::unique_ptr<ASTNode> >&) {
-        //by default do nothing
+    ExactWordMatchFilter(unique_ptr<rocksdb::Iterator>& iter,
+                         StemmedWord& stemmed_word,
+                         StemmedKeyBuilder& key_build)
+        : iter_(std::move(iter)), stemmed_offset_(stemmed_word.stemmed_offset),
+          suffix_(stemmed_word.suffix, stemmed_word.suffix_len),
+          key_build_(key_build)
+    {
+        key_build_.PushObjectKey(stemmed_word.stemmed,
+                                 stemmed_word.stemmed_len);
     }
-    virtual bool IsField() {return false;}
-    const std::string& Literal() const {
-        return name;
+
+    ExactWordMatchFilter& operator=(ExactWordMatchFilter const&) = delete;
+
+    virtual unique_ptr<DocResult> FirstResult(uint64_t startId) {
+        // build full key
+        key_build_.PushDocSeq(startId);
+
+        // seek in index to GTE entry
+        iter_->Seek(key_build_.Key());
+
+        //revert
+        key_build_.Pop(StemmedKeyBuilder::DocSeq);
+
+        return NextResult();
+    }
+
+    virtual unique_ptr<DocResult> NextResult() {
+
+        unique_ptr<DocResult> dr(new DocResult);
+
+        while(iter_->Valid()) {
+            // all out of stuff to return. This (maybe?) can never be invalid
+            // except for io error.
+
+            rocksdb::Slice key = iter_->key(); // start off as full path
+
+            if (!key.starts_with(key_build_.Key()))
+                // prefix no longer matches. all out of stuff to return.
+                return nullptr;
+
+            // remove prefix from id as it should be
+            key.remove_prefix(key_build_.Key().size());
+
+
+
+            records::payload payload;
+            payload.ParseFromArray(iter_->value().data(),
+                                   (int)iter_->value().size());
+
+            for (auto& aos_wis : payload.arrayoffsets_to_wordinfos()) {
+                for (auto& wi : aos_wis.wordinfos()) {
+                    if (stemmed_offset_ == wi.stemmedoffset() &&
+                        suffix_offset_ == wi.suffixoffset() &&
+                        suffix_ == wi.suffixtext()) {
+                        // we have a candidate document to return
+                        auto& arrayoffsets = aos_wis.arrayoffsets();
+                        dr->array_paths.emplace_back(arrayoffsets.begin(),
+                                                     arrayoffsets.end());
+                        char* end = (char*)key.data() + key.size();
+                        dr->seq = std::strtoul(key.data(), &end, 10);
+                        goto loopdone;
+                    }
+                }
+            }
+loopdone:
+            iter_->Next();
+
+            if (dr->array_paths.size() != 0)
+                // record the doc id before we return
+                return dr;
+        }
+        return nullptr;
+    }
+
+};
+
+class SentenceMatchFilter : public QueryRuntimeFilter {
+    SentenceMatchFilter(unique_ptr<std::list<unique_ptr<QueryRuntimeFilter> > >);
+};
+
+
+class AndFilter : public QueryRuntimeFilter {
+    unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters_;
+    std::vector<unique_ptr<QueryRuntimeFilter> >::iterator filter_;
+    size_t match_array_depth;
+public:
+    AndFilter(unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > >& filters,
+              size_t _MatchArrayDepth)
+        : filter_(filters->begin()), filters_(std::move(filters)) {}
+
+    virtual std::unique_ptr<DocResult> FirstResult(uint64_t advance) {
+        auto base_result = filter_->get()->FirstResult(advance);
+        return std::move(Result(base_result));
+    }
+    virtual unique_ptr<DocResult> NextResult() {
+        auto base_result = filter_->get()->NextResult();
+        return std::move(Result(base_result));
+    }
+
+    unique_ptr<DocResult> Result(unique_ptr<DocResult>& base_result) {
+        size_t matchesNeededCount = filters_->size() - 1;
+        base_result->TruncateArrayPaths(match_array_depth);
+        if (base_result == nullptr)
+            return nullptr;
+        while (true) {
+            if (filter_ == filters_->end())
+                filter_ = filters_->begin();
+            else
+                filter_++;
+            auto next_result = filter_->get()->FirstResult(base_result->seq);
+            if (next_result == nullptr)
+                return nullptr;
+            next_result->TruncateArrayPaths(match_array_depth);
+            if (base_result->seq == next_result->seq) {
+                // got a potential match. intersect paths
+                if (base_result->IntersectArrayPaths(*next_result)) {
+                    // intersection exists
+                    if (--matchesNeededCount == 0)
+                        // got all the matches needed, return result
+                        return std::move(base_result);
+                } else {
+                    //no way this doc is a match. get next candidate doc
+                    base_result = filter_->get()->NextResult();
+                    matchesNeededCount = filters_->size() - 1;
+                }
+            } else {
+                // no way this doc is a match. we already have next candidate
+                base_result = std::move(next_result);
+                matchesNeededCount = filters_->size() - 1;
+            }
+        }
     }
 };
 
-class ASTField : public ASTNode {
-public:
 
-    virtual void Initialize(std::stack<std::unique_ptr<ASTNode> >& stack) {
-        name = stack.top()->Literal();
-        stack.pop();
+
+
+class SnapshopIteratorCreator {
+    rocksdb::ReadOptions options_;
+    rocksdb::DB* db_;
+public:
+    SnapshopIteratorCreator(rocksdb::DB* db)
+        : db_(db)
+    {
+        options_.snapshot = db_->GetSnapshot();
     }
-    virtual bool IsField() {return true;}
-    virtual const std::string& Literal() const {
-        return name;
+    ~SnapshopIteratorCreator() {
+        db_->ReleaseSnapshot(options_.snapshot);
     }
+
+    std::unique_ptr<rocksdb::Iterator> NewIterator() {
+        return std::unique_ptr<rocksdb::Iterator>(db_->NewIterator(options_));
+    }
+
 };
 
+std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
+                                            StemmedKeyBuilder& key,
+                                            ASTNode* node,
+                                            size_t array_depth) {
+    switch (node->type) {
+        case ASTNode::EQUALS: {
+            assert(node->children.size() == 2);
+            ASTNode* fieldname;
+            ASTNode* textliteral;
+            if (node->children[0]->type == ASTNode::FIELD) {
+                fieldname = node->children[0].get();
+                textliteral = node->children[1].get();
+            } else {
+                fieldname = node->children[1].get();
+                textliteral = node->children[0].get();
+            }
+            Stems stems(textliteral->value);
 
-class ASTEquals : public ASTNode {
-    std::list<std::unique_ptr<ASTNode> > children;
-public:
-    virtual void Initialize(std::stack<std::unique_ptr<ASTNode> >& stack) {
-        children.push_back(std::move(stack.top()));
-        stack.pop();
-        children.push_back(std::move(stack.top()));
-        stack.pop();
+            unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters(
+                new std::vector<unique_ptr<QueryRuntimeFilter> >);
+            key.PushObjectKey(fieldname->value);
+            while (stems.HasMore()) {
+                StemmedWord stem = stems.Next();
+                std::unique_ptr<rocksdb::Iterator> itor(ic.NewIterator());
+                filters->emplace_back(new ExactWordMatchFilter(itor, stem, key));
+            }
+            key.Pop(StemmedKeyBuilder::ObjectKey);
+            return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
+                                                                 array_depth));
+
+        }
+
+        case ASTNode::AND: {
+            unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters(
+                new std::vector<unique_ptr<QueryRuntimeFilter> >);
+            for(auto& child : node->children) {
+                filters->push_back(WalkAST(ic, key, child.get(), array_depth));
+            }
+            return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
+                                                                array_depth));
+        }
+
+        case ASTNode::ARRAY: {
+            key.PushArray();
+            unique_ptr<QueryRuntimeFilter> ret(WalkAST(ic,
+                                                         key,
+                                                         node->children[0].get(),
+                                                         array_depth + 1));
+            key.Pop(StemmedKeyBuilder::Array);
+            return ret;
+        }
+        case ASTNode::FIELD:
+        case ASTNode::LITERAL:
+        case ASTNode::UNKNOWN:
+        default:
+            assert(false);
+            return nullptr; //placate compiler
     }
-};
 
-class ASTAnd : public ASTNode {
-    std::list<std::unique_ptr<ASTNode> > children;
-public:
-    virtual void Initialize(std::stack<std::unique_ptr<ASTNode> >& stack) {
-        children.push_back(std::move(stack.top()));
-        stack.pop();
-        children.push_back(std::move(stack.top()));
-        stack.pop();
-    }
-};
+        
+}
 
-class ASTArray : public ASTNode {
-    std::unique_ptr<ASTNode> child;
-public:
-    virtual void Initialize(std::stack<std::unique_ptr<ASTNode> >& stack) {
-        name = stack.top()->Literal();
-        stack.pop();
-        child = std::move(stack.top());
-        stack.pop();
-    }
-};
+std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr);
 
 
-class ASTLiteral : public ASTNode {
-public:
-    const std::string value;
-    // NOTE: does NOT unescape the string, just strips off front and end quote
-    ASTLiteral(std::string& Quoted) : value(Quoted.begin()+1, Quoted.end()-1) {
-    }
-    virtual bool IsLiteral() {
-        return true;
-    }
-};
+Query::Query(std::string& str) : root(BuildTree(str)) {
 
+}
 
-std::unique_ptr<ASTNode> BuildTree(std::istream& tokens) {
+std::unique_ptr<Results> Query::Execute(Index* index) {
+    SnapshopIteratorCreator ic(index->GetDB());
+    StemmedKeyBuilder keybuild;
+    unique_ptr<QueryRuntimeFilter> filter(WalkAST(ic, keybuild, root.get(), 0));
+
+    return unique_ptr<Results> (new Results(filter));
+}
+
+/* this is placehilder code until we have a parser. */
+
+std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
+    std::stringstream tokens(tokenstr);
     std::string token;
     std::stack<std::unique_ptr<ASTNode> > stack;
     std::unique_ptr<ASTNode> node;
     while (std::getline(tokens, token, ' ')) {
+        node = std::unique_ptr<ASTNode>(new ASTNode);
+        node->value = token;
         switch (token.front()) {
             case 'F':
                 assert(token == "FIELD");
-                node = std::unique_ptr<ASTNode>(new ASTField);
+                node->type = ASTNode::FIELD;
                 break;
 
             case 'E':
                 assert(token == "EQUALS");
-                node = std::unique_ptr<ASTNode>(new ASTEquals);
+                node->type = ASTNode::EQUALS;
+                node->children.push_back(std::move(stack.top()));
+                stack.pop();
+                node->children.push_back(std::move(stack.top()));
+                stack.pop();
                 break;
 
             case 'A':
-                if (token == "AND")
-                    node = std::unique_ptr<ASTNode>(new ASTAnd);
-                else if (token == "ARRAY")
-                    node = std::unique_ptr<ASTNode>(new ASTArray);
-                else
+                if (token == "AND") {
+                    node->type = ASTNode::AND;
+                    node->children.push_back(std::move(stack.top()));
+                    stack.pop();
+                    node->children.push_back(std::move(stack.top()));
+                    stack.pop();
+
+                } else if (token == "ARRAY") {
+                    node->type = ASTNode::ARRAY;
+                    node->value = stack.top()->value;
+                    stack.pop();
+                    node->children.push_back(std::move(stack.top()));
+                    stack.pop();
+                } else {
                     assert(false);
+                    abort();
+                }
                 break;
 
             case '"':
                 assert(token.back() == '"' && token.size() > 1);
-                node = std::unique_ptr<ASTNode>(new ASTLiteral(token));
+                node->type = ASTNode::ARRAY;
+                // NOTE: does NOT unescape the string, just strips off front and end quote
+                node->value = {token.begin()+1, token.end()-1};
                 break;
 
             case '/':
@@ -138,8 +366,6 @@ std::unique_ptr<ASTNode> BuildTree(std::istream& tokens) {
                 assert(false);
 
         }
-        node->SetName(token);
-        node->Initialize(stack);
         stack.push(std::move(node));
     }
     assert(stack.size() == 1);
@@ -154,170 +380,7 @@ std::unique_ptr<ASTNode> BuildTree(std::istream& tokens) {
 
 
 
-/*
- 'sometext and 23hit'
 
-sometext
-uint64 stemmedOffset 0;
- int64 suffixOffset  8
- string suffixText;  " "
-
-and
-uint64 stemmedOffset 9;
-int64 suffixOffset  12
-string suffixText;  " "
-
-hit
-uint64 stemmedOffset 15;
-int64 suffixOffset  13
-string suffixText;  " "
- 
- */
-
-class ExactWordMatchFilter : public QueryRuntimeFilter {
-
-    size_t prefix_len;
-    uint64_t stemmed_offset;
-    std::string stemmed;
-    int64_t suffix_offset;
-    std::string suffix_text;
-    std::string path;
-
-    std::string key_prefix;
-    rocksdb::Iterator& iter;
-public:
-    ExactWordMatchFilter(rocksdb::Iterator& _iter,
-                         std::string _path,
-                         uint64_t _stemmed_offset,
-                         std::string _stemmed,
-                         int64_t _suffix_offset,
-                         std::string _suffix_text)
-    : iter(_iter), path(_path), stemmed_offset(_stemmed_offset),
-        stemmed(_stemmed), suffix_offset(_suffix_offset),
-        suffix_text(_suffix_text)
-    {
-        key_prefix.reserve(path.length() + stemmed.length() + 10);
-        key_prefix += "D" + path + string("!") + stemmed + "#";
-    }
-
-    virtual unique_ptr<DocResult> FirstResult(std::string& startId) {
-        // build full key
-        key_prefix += startId;
-
-        // seek in index to GTE entry
-        iter.Seek(key_prefix);
-
-        //revert buffer to prefix
-        key_prefix.resize(prefix_len);
-
-
-        return NextResult();
-    }
-
-    virtual unique_ptr<DocResult> NextResult() {
-
-        unique_ptr<DocResult> dr(new DocResult);
-
-        while(iter.Valid()) {
-            // all out of stuff to return. This (maybe?) can never be invalid
-            // except for io error.
-
-            rocksdb::Slice id = iter.key(); // start off as full path
-
-            if (!id.starts_with(key_prefix))
-                // prfix no longer matches. all out of stuff to return.
-                return nullptr;
-
-            // remove prefix from id as it should be
-            id.remove_prefix(prefix_len);
-
-            records::payload payload;
-            payload.ParseFromArray(iter.value().data(),
-                                   (int)iter.value().size());
-
-            for (auto& aos_wis : payload.arrayoffsets_to_wordinfos()) {
-                for (auto& wi : aos_wis.wordinfos()) {
-                    if (stemmed_offset == wi.stemmedoffset() &&
-                        suffix_offset == wi.suffixoffset() &&
-                        suffix_text == wi.suffixtext()) {
-                        // we have a candidate document to return
-                        auto arrayoffsets = aos_wis.arrayoffsets();
-                        dr->array_paths.emplace_back(arrayoffsets.begin(), arrayoffsets.end());
-                    }
-                }
-            }
-
-            if (dr->array_paths.size() != 0) {
-                // record the doc id before we return
-                dr->id.replace(0, id.size(), id.data());
-                return dr;
-            }
-            iter.Next();
-        }
-        
-        return nullptr;
-
-    }
-
-};
-
-class SentenceMatchFilter : public QueryRuntimeFilter {
-    SentenceMatchFilter(unique_ptr<std::list<unique_ptr<QueryRuntimeFilter> > >);
-};
-
-
-class AndFilter : public QueryRuntimeFilter {
-    unique_ptr<std::list<QueryRuntimeFilter> > filters;
-    std::list<QueryRuntimeFilter>::iterator filter;
-    int match_array_depth;
-public:
-    AndFilter(unique_ptr<std::list<QueryRuntimeFilter> >& _filters,
-              int _MatchArrayDepth) : filter(_filters->begin()) {
-        filters = std::move(_filters);
-    }
-    virtual std::unique_ptr<DocResult> FirstResult(std::string& advance) {
-        auto base_result = filter->FirstResult(advance);
-        return std::move(Result(base_result));
-    }
-    virtual unique_ptr<DocResult> NextResult() {
-        auto base_result = filter->NextResult();
-        return std::move(Result(base_result));
-    }
-
-    unique_ptr<DocResult> Result(unique_ptr<DocResult>& base_result) {
-        size_t matchesNeededCount = filters->size() - 1;
-        base_result->TruncateArrayPaths(match_array_depth);
-        if (base_result == nullptr)
-            return nullptr;
-        while (true) {
-            if (filter == filters->end())
-                filter = filters->begin();
-            else
-                filter++;
-            auto next_result = filter->FirstResult(base_result->id);
-            if (next_result == nullptr)
-                return nullptr;
-            next_result->TruncateArrayPaths(match_array_depth);
-            if (base_result->id == next_result->id) {
-                // got a potential match. intersect paths
-                if (base_result->IntersectArrayPaths(*next_result)) {
-                    // intersection exists
-                    if (--matchesNeededCount == 0)
-                        // got all the matches needed, return result
-                        return std::move(base_result);
-                } else {
-                    //no way this doc is a match. get next candidate doc
-                    base_result = filter->NextResult();
-                    matchesNeededCount = filters->size() - 1;
-                }
-            } else {
-                // no way this doc is a match. we already have next cadidate doc
-                base_result = std::move(next_result);
-                matchesNeededCount = filters->size() - 1;
-            }
-        }
-    }
-};
 
 
 namespace_Noise_end

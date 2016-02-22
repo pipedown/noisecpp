@@ -10,94 +10,46 @@
 #include <yajl/yajl_parse.h>
 #include <exception>
 
+#include <string>
+#include <vector>
+#include <map>
+#include "rocksdb/db.h"
+
+#include "porter.h"
 #include "records.pb.h"
+#include "stemmed_key.h"
 
 #include "json_shred.hpp"
+
+
+namespace_Noise
+
 
 void ParseCtx::IncTopArrayOffset() {
     /* we encounter a new element. if we are a child element of an array
      increment the offset. If we aren't (we are the root value or a map
      value) we don't increment */
-    if (!pathElementsStack.empty() && path.at(pathElementsStack.back()) == '$')
+    if (keybuilder.LastPushedSegmentType() == StemmedKeyBuilder::Array)
         pathArrayOffsets.back()++;
 }
 
 
-void ParseCtx::AddEntry(const char* text, size_t textLen) {
-    const char* nextText = text;
-    const char* endText = text + textLen;
-    while (nextText < endText) {
-        const char* stemmedBegin;
-        const char* suffixBegin;
-        size_t suffixLen;
-        StemNext(nextText, endText - nextText,
-                 &stemmedBegin,
-                 &suffixBegin, &suffixLen);
-        string docseqstr = std::to_string(docseq);
-        string key;
-        key.reserve(path.length() + tempbuff.length() + docseqstr.length() + 4);
-        key += "D";// in the keyspace "D", now build the rest of key
-        key += path;
-        key += "!";
-        key += tempbuff;
-        key += "#";
-        key += docseqstr;
-        map[key][pathArrayOffsets].push_back({size_t(stemmedBegin - text),
-                                              string(suffixBegin, suffixLen),
-                                              long(suffixBegin - stemmedBegin)});
-        nextText = suffixBegin + suffixLen;
+void ParseCtx::AddEntries(const char* text, size_t textLen) {
+    Stems stems(text, textLen);
+
+    while (stems.HasMore()) {
+        StemmedWord word = stems.Next();
+        keybuilder.PushWord(word.stemmed, word.stemmed_len);
+        keybuilder.PushDocSeq(docseq);
+        map[keybuilder.Key()][pathArrayOffsets].push_back({word.stemmed_offset,
+                                              string(word.suffix, word.suffix_len),
+                                              long(word.suffix_offset - word.stemmed_offset)});
+        keybuilder.Pop(StemmedKeyBuilder::DocSeq);
+        keybuilder.Pop(StemmedKeyBuilder::Word);
     }
 }
 
-void ParseCtx::StemNext(const char* text, size_t len,
-                        const char** stemmedBegin,
-                        const char** suffixBegin, size_t* suffixLen) {
-    tempbuff.resize(0);
-    *suffixLen = 0;
-    *suffixBegin = nullptr;
-    const char* t = text;
-    const char* end = text + len;
-    while (t < end) {
-        //skip non-alpha. this puts any leading whitespace into suffix
-        char c = *t;
-        if (isupper(c) || islower(c))
-            break;
-        t++;
-    }
-    if (t != text)
-        // if we advanced past some non-alpha text, we preserve it in the
-        // suffix (which is only usually a suffix, not always)
-        *suffixBegin = text;
-    //stemmedText must begin here.
-    *stemmedBegin = t;
-    while (t < end) {
-        char c = *t;
-        if (!isupper(c) && !islower(c))
-            break;
-        char l = tolower(c);
-        // we changed the case and we if we aren't already tracking suffix
-        // chars then do it now.
-        if (l != c && !*suffixBegin)
-            *suffixBegin = t;
-        tempbuff.push_back(l);
-        t++;
-    }
-    if (!*suffixBegin)
-        *suffixBegin = t;
-    while (t < end) {
-        //skip non-alpha
-        char c = *t;
-        if (isupper(c) || islower(c))
-            break;
-        t++;
-    }
-    if (tempbuff.size()) {
-        // stem the word
-        size_t len = stemmer.Stem(&tempbuff.front(), tempbuff.size());
-        tempbuff.resize(len);
-    }
-    *suffixLen = t - *suffixBegin;
-}
+
 
 
 static int callback_null(void * v)
@@ -175,7 +127,7 @@ static int callback_string(void * v, const unsigned char * stringVal,
             return 1;
         }
         ctx.IncTopArrayOffset();
-        ctx.AddEntry((const char*)stringVal, stringLen);
+        ctx.AddEntries((const char*)stringVal, stringLen);
         return 1;
     } catch (std::exception& ) {
         std::exception_ptr exception_ptr;
@@ -196,11 +148,10 @@ static int callback_map_key(void* v, const unsigned char * keyVal,
             // we are inside a child object of a special key. ignore.
             return 1;
         }
-        ctx.path.resize(ctx.pathElementsStack.back() + 1);
 
-        if (keyVal[0] == '_' && ctx.path == ".") {
+        if (keyVal[0] == '_' && ctx.keybuilder.SegmentsCount() == 0) {
             // top level object and we have reserved field. do special handling
-            if (keyVal[1] == 'i' && keyVal[2] == 'd' && keyLen == 3) {
+            if (keyLen == 3 && keyVal[1] == 'i' && keyVal[2] == 'd') {
                 ctx.expectIdString = true;
             } else {
                 ctx.ignoreChildren = 1;
@@ -208,22 +159,12 @@ static int callback_map_key(void* v, const unsigned char * keyVal,
             return 1;
         }
 
-        const unsigned char* keyEnd = keyVal + keyLen;
-        while (keyVal != keyEnd) {
-            char c = *keyVal++;
-            switch (c) {
-                case '\\':
-                case '$':
-                case '.':
-                case '!':
-                case '#':
-                    // escape special chars
-                    ctx.path.push_back('\\');
-                default:
-                    ctx.path.push_back(c);
-            }
+        // pop the dummy value
+        ctx.keybuilder.Pop(StemmedKeyBuilder::ObjectKey);
 
-        }
+        // push the real value
+        ctx.keybuilder.PushObjectKey((char*)keyVal, keyLen);
+       
         return 1;
     } catch (std::exception& ) {
         std::exception_ptr exception_ptr;
@@ -243,8 +184,7 @@ static int callback_start_map(void* v)
             ctx.tempbuff = "Expected string in _id field. Found object.";
             return 0;
         }
-        ctx.pathElementsStack.push_back(ctx.path.length());
-        ctx.path.push_back('.'); // indicate key
+        ctx.keybuilder.PushObjectKey("", 0); // push a dummy value
         return 1;
     } catch (std::exception& ) {
         std::exception_ptr exception_ptr;
@@ -260,8 +200,7 @@ static int callback_end_map(void * v)
             ctx.ignoreChildren--;
             return 1;
         }
-        ctx.path.resize(ctx.pathElementsStack.back());
-        ctx.pathElementsStack.pop_back();
+        ctx.keybuilder.Pop(StemmedKeyBuilder::ObjectKey);
 
         return 1;
     } catch (std::exception& ) {
@@ -275,8 +214,7 @@ static int callback_start_array(void * v)
     try {
         ParseCtx& ctx = *(ParseCtx*)v;
         ctx.IncTopArrayOffset();
-        ctx.pathElementsStack.push_back(ctx.path.length());
-        ctx.path.push_back('$');
+        ctx.keybuilder.PushArray();
         ctx.pathArrayOffsets.push_back(0);
         if (ctx.ignoreChildren) {
             ctx.ignoreChildren++;
@@ -297,8 +235,7 @@ static int callback_end_array(void * v)
     try {
         ParseCtx& ctx = *(ParseCtx*)v;
         ctx.pathArrayOffsets.pop_back();
-        ctx.path.resize(ctx.pathElementsStack.back());
-        ctx.pathElementsStack.pop_back();
+        ctx.keybuilder.Pop(StemmedKeyBuilder::Array);
         if (ctx.ignoreChildren) {
             ctx.ignoreChildren--;
             return 1;
@@ -392,9 +329,6 @@ bool JsonShredder::Shred(uint64_t docseq,
     }
     *idout = ctx.docid;
 
-    if (!success)
-        ctx.Reset();
-
     return success;
 }
 
@@ -418,6 +352,8 @@ void JsonShredder::AddToBatch(rocksdb::WriteBatch* batch) {
         batch->Put(wordPathInfos.first,
                   pbarrayoffsets_to_wordinfo.SerializeAsString());
     }
-    ctx.Reset();
 }
+
+
+namespace_Noise_end
 

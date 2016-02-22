@@ -9,12 +9,10 @@
 #ifndef json_shred_hpp
 #define json_shred_hpp
 
-#include <string>
-#include <vector>
-#include <map>
-#include "porter.h"
-#include "rocksdb/db.h"
+#include "noise.h"
 
+
+namespace_Noise
 
 using std::string;
 using std::vector;
@@ -44,44 +42,34 @@ typedef map<string, array_offsets_to_word_info > word_path_info_map;
 struct ParseCtx {
 public:
     string docid;
-    bool expectIdString;
-    unsigned long ignoreChildren;
-    uint64_t docseq;
-    string path;
+    bool expectIdString = false;
+    unsigned long ignoreChildren = 0;
+    uint64_t docseq = 0;
     vector<size_t> pathArrayOffsets;
-    vector<size_t> pathElementsStack;
+    StemmedKeyBuilder keybuilder;
 
     word_path_info_map map;
-    Stemmer stemmer;
 
-    std::exception_ptr exception_ptr;
+    std::exception_ptr exception_ptr = nullptr;
     string tempbuff;
 
-    ParseCtx() : expectIdString(false), ignoreChildren(0), docseq(0) {}
-
-    void Reset() {
-        expectIdString = false;
-        ignoreChildren = 0;
-        path.clear();
-        pathArrayOffsets.clear();
-        pathElementsStack.clear();
-        docid.clear();
-    }
     void IncTopArrayOffset();
-    void AddEntry(const char* text, size_t len);
-    void StemNext(const char* text, size_t len,
-                  const char** stemmedBegin,
-                  const char** suffixBegin, size_t* suffixLen);
+    void AddEntries(const char* text, size_t len);
 };
 
 class JsonShredder {
 private:
     ParseCtx ctx;
 public:
+    static void AddPathToString(std::string& path_path, std::string& dest);
+
     bool Shred(uint64_t docseq, const std::string& json,
                std::string* idout, std::string* errout);
 
     void AddToBatch(rocksdb::WriteBatch* batch);
 };
+
+
+namespace_Noise_end
 
 #endif /* json_shred_hpp */

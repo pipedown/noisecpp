@@ -4,8 +4,6 @@
 //
 //
 
-#include "porter.h"
-
 
 /* This is the Porter stemming algorithm, coded up as thread-safe ANSI C
  by the author.
@@ -46,18 +44,6 @@
 #include <stdlib.h>  /* for malloc, free */
 #include <string.h>  /* for memcmp, memmove */
 
-/* You will probably want to move the following declarations to a central
- header file.
- */
-
-struct stemmer;
-
-extern struct stemmer * create_stemmer(void);
-extern void free_stemmer(struct stemmer * z);
-
-extern int stem(struct stemmer * z, char * b, int k);
-
-
 
 /* The main part of the stemming algorithm starts here.
  */
@@ -65,8 +51,7 @@ extern int stem(struct stemmer * z, char * b, int k);
 #define TRUE 1
 #define FALSE 0
 
-/* stemmer is a structure for a few local bits of data,
- */
+
 
 struct stemmer {
     char * b;       /* buffer for word to be stemmed */
@@ -75,36 +60,7 @@ struct stemmer {
 };
 
 
-/* Member b is a buffer holding a word to be stemmed. The letters are in
- b[0], b[1] ... ending at b[z->k]. Member k is readjusted downwards as
- the stemming progresses. Zero termination is not in fact used in the
- algorithm.
 
- Note that only lower case sequences are stemmed. Forcing to lower case
- should be done before stem(...) is called.
-
-
- Typical usage is:
-
- struct stemmer * z = create_stemmer();
- char b[] = "pencils";
- int res = stem(z, b, 6);
- /- stem the 7 characters of b[0] to b[6]. The result, res,
- will be 5 (the 's' is removed). -/
- free_stemmer(z);
- */
-
-
-extern struct stemmer * create_stemmer(void)
-{
-    return (struct stemmer *) malloc(sizeof(struct stemmer));
-    /* assume malloc succeeds */
-}
-
-extern void free_stemmer(struct stemmer * z)
-{
-    free(z);
-}
 
 
 /* cons(z, i) is TRUE <=> b[i] is a consonant. ('b' means 'z->b', but here
@@ -383,19 +339,20 @@ static void step5(struct stemmer * z)
  length, so 0 <= k' <= k.
  */
 
-extern int stem(struct stemmer * z, char * b, int k)
+extern int porter_stem_inplace(char * b, int k)
 {
+    struct stemmer z;
     if (k <= 1) return k; /*-DEPARTURE-*/
-    z->b = b; z->k = k; /* copy the parameters into z */
+    z.b = b; z.k = k; /* copy the parameters into z */
 
     /* With this line, strings of length 1 or 2 don't go through the
      stemming process, although no mention is made of this in the
      published algorithm. Remove the line to match the published
      algorithm. */
     
-    step1ab(z);
-    if (z->k > 0) {
-        step1c(z); step2(z); step3(z); step4(z); step5(z);
+    step1ab(&z);
+    if (z.k > 0) {
+        step1c(&z); step2(&z); step3(&z); step4(&z); step5(&z);
     }
-    return z->k;
+    return z.k;
 }

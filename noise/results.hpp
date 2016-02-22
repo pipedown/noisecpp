@@ -9,14 +9,13 @@
 #ifndef results_hpp
 #define results_hpp
 
-#include <stdio.h>
 #include "noise.h"
 
 namespace_Noise
 
 struct DocResult {
-    std::string id;
-    std::list<std::vector<uint64_t> > array_paths;
+    uint64_t seq;
+    std::list< std::vector<uint64_t> > array_paths;
 
     void TruncateArrayPaths(size_t array_path_depth);
     bool IntersectArrayPaths(const DocResult& other);
@@ -26,21 +25,21 @@ class Results {
     std::unique_ptr<QueryRuntimeFilter> filter;
     bool first_has_been_called = false;
 
+public:
     Results(std::unique_ptr<QueryRuntimeFilter>& _filter) :
         filter(std::move(_filter)) {}
 
-    std::string GetNext() {
-        static std::string emptystr("");
+    uint64_t GetNext() {
         std::unique_ptr<DocResult> dr;
         if (!first_has_been_called) {
             first_has_been_called = true;
 
-            dr = filter->FirstResult(emptystr);
+            dr = filter->FirstResult(0);
         } else {
             dr = filter->NextResult();
         }
 
-        return dr ? dr->id : emptystr;
+        return dr ? dr->seq : 0;
     }
 };
 

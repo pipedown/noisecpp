@@ -17,21 +17,20 @@ namespace_Noise
 
 class DocResult;
 class Results;
+class ASTNode;
 
 class QueryRuntimeFilter {
 public:
     // returns the doc at startId, or next after
-    virtual std::unique_ptr<DocResult> FirstResult(std::string& startId);
+    virtual std::unique_ptr<DocResult> FirstResult(uint64_t startId);
 
     // returns the doc next after previous
     virtual std::unique_ptr<DocResult> NextResult();
 };
 
 
-
 class Query {
-
-
+    std::unique_ptr<ASTNode> root;
 public:
     Query(std::string& query);
 

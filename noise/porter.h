@@ -9,39 +9,115 @@
 #ifndef porter_h
 #define porter_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+int porter_stem_inplace(char * b, int k);
 
-struct stemmer;
-typedef struct stemmer* porter;
+// "Abc 123abc abc123 123 a"
+/*
 
-porter create_stemmer(void);
-void free_stemmer(porter z);
-int stem(porter z, char * b, int k);
+stemmed: abc
+stemoff: 0
+suffix: "Abc "
+sufoff:  0
 
-#ifdef __cplusplus
-}
+stemmed: abc
+stemoff: 8
+suffix: "123abc "
+sufoff:  5
 
-class Stemmer {
-    porter stemmer;
+stemmed: abc
+stemoff: 12
+suffix: "123 123 "
+sufoff:  15
+
+stemmed: a
+stemoff:
+suffix: ""
+sufoff:  15
+
+ */
+
+struct StemmedWord {
+    size_t stemmed_offset;
+    const char* stemmed;
+    size_t stemmed_len;
+
+    size_t suffix_offset;
+    const char* suffix;
+    size_t suffix_len;
+};
+
+class Stems {
+    std::string tempbuf;
+    const char* input;
+    const char* input_end;
+    const char* current;
+
 public:
-    Stemmer() : stemmer(nullptr) {
-        stemmer = create_stemmer();
-        if (stemmer == nullptr) {
-            throw std::runtime_error("Couldn't allocate stemmer");
+
+    Stems(const std::string& str) :
+        input(&*str.begin()), input_end(&*str.end()), current(input) {}
+
+    Stems(const char* input_, size_t inputlen) :
+        input(input_), input_end(input_ + inputlen), current(input) {}
+
+    bool HasMore() {
+        return current < input_end;
+    }
+
+    StemmedWord Next() {
+        tempbuf.resize(0);
+        StemmedWord ret;
+        std::string str;
+        const char* start = current;
+
+        while (current < input_end) {
+            //skip non-alpha. this puts any leading whitespace into suffix
+            char c = *current;
+            if (isupper(c) || islower(c))
+                break;
+            current++;
         }
-    }
+        if (current != start)
+            // if we advanced past some non-alpha text, we preserve it in the
+            // suffix (which is only usually a suffix, not always)
+            ret.suffix = start;
 
-    ~Stemmer() {
-        free_stemmer(stemmer);
-    }
+        //stemmedText must begin here.
+        ret.stemmed_offset = current - input;
 
-    size_t Stem(char* text, size_t k) {
-        return (size_t)stem(stemmer, text, (int)k);
+        while (current < input_end) {
+            char c = *current;
+            if (!isupper(c) && !islower(c))
+                break;
+            char l = tolower(c);
+            // we changed the case and we if we aren't already tracking suffix
+            // chars then do it now.
+            if (l != c && !ret.suffix)
+                ret.suffix = current;
+            tempbuf.push_back(l);
+            current++;
+        }
+        if (!ret.suffix)
+            ret.suffix = current;
+        while (current < input_end) {
+            //skip non-alpha
+            char c = *current;
+            if (isupper(c) || islower(c))
+                break;
+            current++;
+        }
+        if (tempbuf.size()) {
+            // stem the word
+            size_t len = porter_stem_inplace(&tempbuf.front(), (int)tempbuf.size());
+            tempbuf.resize(len);
+        }
+        ret.suffix_len = current - ret.suffix;
+        ret.suffix_offset = ret.suffix - input;
+        ret.stemmed = &tempbuf.front();
+        ret.stemmed_len = tempbuf.length();
+        return ret;
     }
 };
 
-#endif
 
 #endif /* porter_h */

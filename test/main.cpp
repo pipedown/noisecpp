@@ -7,11 +7,13 @@
 //
 
 #include <iostream>
+#include <string>
 #include <stack>
 #include <list>
 #include <memory>
 #include <sstream>
 #include <fstream>
+#include "noise.h"
 #include "query.hpp"
 #include "results.hpp"
 
@@ -20,20 +22,30 @@
 int main(int argc, const char * argv[]) {
     // Really, this much code to read file into a string?
     std::ifstream querystream("testqueries.txt");
-    std::string querystr((std::istreambuf_iterator<char>(querystream)),
-                    std::istreambuf_iterator<char>());
 
-    printf("%s\n", querystr.c_str());
+    std::string line;
 
+    std::getline(querystream, line);
 
-    Noise::Query query(querystr);
+    Noise::Index index;
+    std::string error = index.Open(argv[0]);
+    if (error.length()) {
+        fprintf(stderr, "Error opening index (%s): %s\n", argv[0], error.c_str());
+        return 1;
+    }
 
-    Index index("someindex");
-    unique_ptr<Noise::Results> results(index.Execute(query));
+    while (true) {
+        if (line.size() == 0 || line.find("//") != 0)
+            continue;
+            Noise::Query query(line);
 
-    string id = results->GetNext();
-    while(id.size()) {
-        printf("id: %s\n", querystr.c_str());
+            std::unique_ptr<Noise::Results> results(query.Execute(&index));
+
+            uint64_t seq = results->GetNext();
+            while(seq) {
+                printf("id: %ul\n", seq);
+            }
+        std::getline(querystream, line);
     }
 
     return 0;
