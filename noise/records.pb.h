@@ -34,9 +34,9 @@ void protobuf_AssignDesc_records_2eproto();
 void protobuf_ShutdownFile_records_2eproto();
 
 class header;
-class wordinfo;
-class arrayoffsets_to_wordinfo;
 class payload;
+class payload_arrayoffsets_to_wordinfo;
+class payload_arrayoffsets_to_wordinfo_wordinfo;
 
 // ===================================================================
 
@@ -129,14 +129,14 @@ class header : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class wordinfo : public ::google::protobuf::Message {
+class payload_arrayoffsets_to_wordinfo_wordinfo : public ::google::protobuf::Message {
  public:
-  wordinfo();
-  virtual ~wordinfo();
+  payload_arrayoffsets_to_wordinfo_wordinfo();
+  virtual ~payload_arrayoffsets_to_wordinfo_wordinfo();
 
-  wordinfo(const wordinfo& from);
+  payload_arrayoffsets_to_wordinfo_wordinfo(const payload_arrayoffsets_to_wordinfo_wordinfo& from);
 
-  inline wordinfo& operator=(const wordinfo& from) {
+  inline payload_arrayoffsets_to_wordinfo_wordinfo& operator=(const payload_arrayoffsets_to_wordinfo_wordinfo& from) {
     CopyFrom(from);
     return *this;
   }
@@ -150,17 +150,17 @@ class wordinfo : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const wordinfo& default_instance();
+  static const payload_arrayoffsets_to_wordinfo_wordinfo& default_instance();
 
-  void Swap(wordinfo* other);
+  void Swap(payload_arrayoffsets_to_wordinfo_wordinfo* other);
 
   // implements Message ----------------------------------------------
 
-  wordinfo* New() const;
+  payload_arrayoffsets_to_wordinfo_wordinfo* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const wordinfo& from);
-  void MergeFrom(const wordinfo& from);
+  void CopyFrom(const payload_arrayoffsets_to_wordinfo_wordinfo& from);
+  void MergeFrom(const payload_arrayoffsets_to_wordinfo_wordinfo& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -208,7 +208,7 @@ class wordinfo : public ::google::protobuf::Message {
   inline ::std::string* release_suffixtext();
   inline void set_allocated_suffixtext(::std::string* suffixtext);
 
-  // @@protoc_insertion_point(class_scope:records.wordinfo)
+  // @@protoc_insertion_point(class_scope:records.payload.arrayoffsets_to_wordinfo.wordinfo)
  private:
   inline void set_has_stemmedoffset();
   inline void clear_has_stemmedoffset();
@@ -229,18 +229,18 @@ class wordinfo : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_records_2eproto();
 
   void InitAsDefaultInstance();
-  static wordinfo* default_instance_;
+  static payload_arrayoffsets_to_wordinfo_wordinfo* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class arrayoffsets_to_wordinfo : public ::google::protobuf::Message {
+class payload_arrayoffsets_to_wordinfo : public ::google::protobuf::Message {
  public:
-  arrayoffsets_to_wordinfo();
-  virtual ~arrayoffsets_to_wordinfo();
+  payload_arrayoffsets_to_wordinfo();
+  virtual ~payload_arrayoffsets_to_wordinfo();
 
-  arrayoffsets_to_wordinfo(const arrayoffsets_to_wordinfo& from);
+  payload_arrayoffsets_to_wordinfo(const payload_arrayoffsets_to_wordinfo& from);
 
-  inline arrayoffsets_to_wordinfo& operator=(const arrayoffsets_to_wordinfo& from) {
+  inline payload_arrayoffsets_to_wordinfo& operator=(const payload_arrayoffsets_to_wordinfo& from) {
     CopyFrom(from);
     return *this;
   }
@@ -254,17 +254,17 @@ class arrayoffsets_to_wordinfo : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const arrayoffsets_to_wordinfo& default_instance();
+  static const payload_arrayoffsets_to_wordinfo& default_instance();
 
-  void Swap(arrayoffsets_to_wordinfo* other);
+  void Swap(payload_arrayoffsets_to_wordinfo* other);
 
   // implements Message ----------------------------------------------
 
-  arrayoffsets_to_wordinfo* New() const;
+  payload_arrayoffsets_to_wordinfo* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const arrayoffsets_to_wordinfo& from);
-  void MergeFrom(const arrayoffsets_to_wordinfo& from);
+  void CopyFrom(const payload_arrayoffsets_to_wordinfo& from);
+  void MergeFrom(const payload_arrayoffsets_to_wordinfo& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -284,6 +284,8 @@ class arrayoffsets_to_wordinfo : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
+  typedef payload_arrayoffsets_to_wordinfo_wordinfo wordinfo;
+
   // accessors -------------------------------------------------------
 
   // repeated uint64 arrayoffsets = 1;
@@ -298,19 +300,19 @@ class arrayoffsets_to_wordinfo : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
       mutable_arrayoffsets();
 
-  // repeated .records.wordinfo wordinfos = 2;
+  // repeated .records.payload.arrayoffsets_to_wordinfo.wordinfo wordinfos = 2;
   inline int wordinfos_size() const;
   inline void clear_wordinfos();
   static const int kWordinfosFieldNumber = 2;
-  inline const ::records::wordinfo& wordinfos(int index) const;
-  inline ::records::wordinfo* mutable_wordinfos(int index);
-  inline ::records::wordinfo* add_wordinfos();
-  inline const ::google::protobuf::RepeatedPtrField< ::records::wordinfo >&
+  inline const ::records::payload_arrayoffsets_to_wordinfo_wordinfo& wordinfos(int index) const;
+  inline ::records::payload_arrayoffsets_to_wordinfo_wordinfo* mutable_wordinfos(int index);
+  inline ::records::payload_arrayoffsets_to_wordinfo_wordinfo* add_wordinfos();
+  inline const ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo_wordinfo >&
       wordinfos() const;
-  inline ::google::protobuf::RepeatedPtrField< ::records::wordinfo >*
+  inline ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo_wordinfo >*
       mutable_wordinfos();
 
-  // @@protoc_insertion_point(class_scope:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(class_scope:records.payload.arrayoffsets_to_wordinfo)
  private:
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
@@ -318,13 +320,13 @@ class arrayoffsets_to_wordinfo : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > arrayoffsets_;
-  ::google::protobuf::RepeatedPtrField< ::records::wordinfo > wordinfos_;
+  ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo_wordinfo > wordinfos_;
   friend void  protobuf_AddDesc_records_2eproto();
   friend void protobuf_AssignDesc_records_2eproto();
   friend void protobuf_ShutdownFile_records_2eproto();
 
   void InitAsDefaultInstance();
-  static arrayoffsets_to_wordinfo* default_instance_;
+  static payload_arrayoffsets_to_wordinfo* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -379,18 +381,20 @@ class payload : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
+  typedef payload_arrayoffsets_to_wordinfo arrayoffsets_to_wordinfo;
+
   // accessors -------------------------------------------------------
 
-  // repeated .records.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+  // repeated .records.payload.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
   inline int arrayoffsets_to_wordinfos_size() const;
   inline void clear_arrayoffsets_to_wordinfos();
   static const int kArrayoffsetsToWordinfosFieldNumber = 1;
-  inline const ::records::arrayoffsets_to_wordinfo& arrayoffsets_to_wordinfos(int index) const;
-  inline ::records::arrayoffsets_to_wordinfo* mutable_arrayoffsets_to_wordinfos(int index);
-  inline ::records::arrayoffsets_to_wordinfo* add_arrayoffsets_to_wordinfos();
-  inline const ::google::protobuf::RepeatedPtrField< ::records::arrayoffsets_to_wordinfo >&
+  inline const ::records::payload_arrayoffsets_to_wordinfo& arrayoffsets_to_wordinfos(int index) const;
+  inline ::records::payload_arrayoffsets_to_wordinfo* mutable_arrayoffsets_to_wordinfos(int index);
+  inline ::records::payload_arrayoffsets_to_wordinfo* add_arrayoffsets_to_wordinfos();
+  inline const ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo >&
       arrayoffsets_to_wordinfos() const;
-  inline ::google::protobuf::RepeatedPtrField< ::records::arrayoffsets_to_wordinfo >*
+  inline ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo >*
       mutable_arrayoffsets_to_wordinfos();
 
   // @@protoc_insertion_point(class_scope:records.payload)
@@ -400,7 +404,7 @@ class payload : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedPtrField< ::records::arrayoffsets_to_wordinfo > arrayoffsets_to_wordinfos_;
+  ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo > arrayoffsets_to_wordinfos_;
   friend void  protobuf_AddDesc_records_2eproto();
   friend void protobuf_AssignDesc_records_2eproto();
   friend void protobuf_ShutdownFile_records_2eproto();
@@ -465,109 +469,109 @@ inline void header::set_high_seq(::google::protobuf::uint64 value) {
 
 // -------------------------------------------------------------------
 
-// wordinfo
+// payload_arrayoffsets_to_wordinfo_wordinfo
 
 // required uint64 stemmedOffset = 1;
-inline bool wordinfo::has_stemmedoffset() const {
+inline bool payload_arrayoffsets_to_wordinfo_wordinfo::has_stemmedoffset() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void wordinfo::set_has_stemmedoffset() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_has_stemmedoffset() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void wordinfo::clear_has_stemmedoffset() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::clear_has_stemmedoffset() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void wordinfo::clear_stemmedoffset() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::clear_stemmedoffset() {
   stemmedoffset_ = GOOGLE_ULONGLONG(0);
   clear_has_stemmedoffset();
 }
-inline ::google::protobuf::uint64 wordinfo::stemmedoffset() const {
-  // @@protoc_insertion_point(field_get:records.wordinfo.stemmedOffset)
+inline ::google::protobuf::uint64 payload_arrayoffsets_to_wordinfo_wordinfo::stemmedoffset() const {
+  // @@protoc_insertion_point(field_get:records.payload.arrayoffsets_to_wordinfo.wordinfo.stemmedOffset)
   return stemmedoffset_;
 }
-inline void wordinfo::set_stemmedoffset(::google::protobuf::uint64 value) {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_stemmedoffset(::google::protobuf::uint64 value) {
   set_has_stemmedoffset();
   stemmedoffset_ = value;
-  // @@protoc_insertion_point(field_set:records.wordinfo.stemmedOffset)
+  // @@protoc_insertion_point(field_set:records.payload.arrayoffsets_to_wordinfo.wordinfo.stemmedOffset)
 }
 
 // required int64 suffixOffset = 2;
-inline bool wordinfo::has_suffixoffset() const {
+inline bool payload_arrayoffsets_to_wordinfo_wordinfo::has_suffixoffset() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void wordinfo::set_has_suffixoffset() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_has_suffixoffset() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void wordinfo::clear_has_suffixoffset() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::clear_has_suffixoffset() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void wordinfo::clear_suffixoffset() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::clear_suffixoffset() {
   suffixoffset_ = GOOGLE_LONGLONG(0);
   clear_has_suffixoffset();
 }
-inline ::google::protobuf::int64 wordinfo::suffixoffset() const {
-  // @@protoc_insertion_point(field_get:records.wordinfo.suffixOffset)
+inline ::google::protobuf::int64 payload_arrayoffsets_to_wordinfo_wordinfo::suffixoffset() const {
+  // @@protoc_insertion_point(field_get:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixOffset)
   return suffixoffset_;
 }
-inline void wordinfo::set_suffixoffset(::google::protobuf::int64 value) {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_suffixoffset(::google::protobuf::int64 value) {
   set_has_suffixoffset();
   suffixoffset_ = value;
-  // @@protoc_insertion_point(field_set:records.wordinfo.suffixOffset)
+  // @@protoc_insertion_point(field_set:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixOffset)
 }
 
 // required string suffixText = 3;
-inline bool wordinfo::has_suffixtext() const {
+inline bool payload_arrayoffsets_to_wordinfo_wordinfo::has_suffixtext() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void wordinfo::set_has_suffixtext() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_has_suffixtext() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void wordinfo::clear_has_suffixtext() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::clear_has_suffixtext() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void wordinfo::clear_suffixtext() {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::clear_suffixtext() {
   if (suffixtext_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     suffixtext_->clear();
   }
   clear_has_suffixtext();
 }
-inline const ::std::string& wordinfo::suffixtext() const {
-  // @@protoc_insertion_point(field_get:records.wordinfo.suffixText)
+inline const ::std::string& payload_arrayoffsets_to_wordinfo_wordinfo::suffixtext() const {
+  // @@protoc_insertion_point(field_get:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixText)
   return *suffixtext_;
 }
-inline void wordinfo::set_suffixtext(const ::std::string& value) {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_suffixtext(const ::std::string& value) {
   set_has_suffixtext();
   if (suffixtext_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     suffixtext_ = new ::std::string;
   }
   suffixtext_->assign(value);
-  // @@protoc_insertion_point(field_set:records.wordinfo.suffixText)
+  // @@protoc_insertion_point(field_set:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixText)
 }
-inline void wordinfo::set_suffixtext(const char* value) {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_suffixtext(const char* value) {
   set_has_suffixtext();
   if (suffixtext_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     suffixtext_ = new ::std::string;
   }
   suffixtext_->assign(value);
-  // @@protoc_insertion_point(field_set_char:records.wordinfo.suffixText)
+  // @@protoc_insertion_point(field_set_char:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixText)
 }
-inline void wordinfo::set_suffixtext(const char* value, size_t size) {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_suffixtext(const char* value, size_t size) {
   set_has_suffixtext();
   if (suffixtext_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     suffixtext_ = new ::std::string;
   }
   suffixtext_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:records.wordinfo.suffixText)
+  // @@protoc_insertion_point(field_set_pointer:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixText)
 }
-inline ::std::string* wordinfo::mutable_suffixtext() {
+inline ::std::string* payload_arrayoffsets_to_wordinfo_wordinfo::mutable_suffixtext() {
   set_has_suffixtext();
   if (suffixtext_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     suffixtext_ = new ::std::string;
   }
-  // @@protoc_insertion_point(field_mutable:records.wordinfo.suffixText)
+  // @@protoc_insertion_point(field_mutable:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixText)
   return suffixtext_;
 }
-inline ::std::string* wordinfo::release_suffixtext() {
+inline ::std::string* payload_arrayoffsets_to_wordinfo_wordinfo::release_suffixtext() {
   clear_has_suffixtext();
   if (suffixtext_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     return NULL;
@@ -577,7 +581,7 @@ inline ::std::string* wordinfo::release_suffixtext() {
     return temp;
   }
 }
-inline void wordinfo::set_allocated_suffixtext(::std::string* suffixtext) {
+inline void payload_arrayoffsets_to_wordinfo_wordinfo::set_allocated_suffixtext(::std::string* suffixtext) {
   if (suffixtext_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete suffixtext_;
   }
@@ -588,70 +592,70 @@ inline void wordinfo::set_allocated_suffixtext(::std::string* suffixtext) {
     clear_has_suffixtext();
     suffixtext_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_set_allocated:records.wordinfo.suffixText)
+  // @@protoc_insertion_point(field_set_allocated:records.payload.arrayoffsets_to_wordinfo.wordinfo.suffixText)
 }
 
 // -------------------------------------------------------------------
 
-// arrayoffsets_to_wordinfo
+// payload_arrayoffsets_to_wordinfo
 
 // repeated uint64 arrayoffsets = 1;
-inline int arrayoffsets_to_wordinfo::arrayoffsets_size() const {
+inline int payload_arrayoffsets_to_wordinfo::arrayoffsets_size() const {
   return arrayoffsets_.size();
 }
-inline void arrayoffsets_to_wordinfo::clear_arrayoffsets() {
+inline void payload_arrayoffsets_to_wordinfo::clear_arrayoffsets() {
   arrayoffsets_.Clear();
 }
-inline ::google::protobuf::uint64 arrayoffsets_to_wordinfo::arrayoffsets(int index) const {
-  // @@protoc_insertion_point(field_get:records.arrayoffsets_to_wordinfo.arrayoffsets)
+inline ::google::protobuf::uint64 payload_arrayoffsets_to_wordinfo::arrayoffsets(int index) const {
+  // @@protoc_insertion_point(field_get:records.payload.arrayoffsets_to_wordinfo.arrayoffsets)
   return arrayoffsets_.Get(index);
 }
-inline void arrayoffsets_to_wordinfo::set_arrayoffsets(int index, ::google::protobuf::uint64 value) {
+inline void payload_arrayoffsets_to_wordinfo::set_arrayoffsets(int index, ::google::protobuf::uint64 value) {
   arrayoffsets_.Set(index, value);
-  // @@protoc_insertion_point(field_set:records.arrayoffsets_to_wordinfo.arrayoffsets)
+  // @@protoc_insertion_point(field_set:records.payload.arrayoffsets_to_wordinfo.arrayoffsets)
 }
-inline void arrayoffsets_to_wordinfo::add_arrayoffsets(::google::protobuf::uint64 value) {
+inline void payload_arrayoffsets_to_wordinfo::add_arrayoffsets(::google::protobuf::uint64 value) {
   arrayoffsets_.Add(value);
-  // @@protoc_insertion_point(field_add:records.arrayoffsets_to_wordinfo.arrayoffsets)
+  // @@protoc_insertion_point(field_add:records.payload.arrayoffsets_to_wordinfo.arrayoffsets)
 }
 inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-arrayoffsets_to_wordinfo::arrayoffsets() const {
-  // @@protoc_insertion_point(field_list:records.arrayoffsets_to_wordinfo.arrayoffsets)
+payload_arrayoffsets_to_wordinfo::arrayoffsets() const {
+  // @@protoc_insertion_point(field_list:records.payload.arrayoffsets_to_wordinfo.arrayoffsets)
   return arrayoffsets_;
 }
 inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-arrayoffsets_to_wordinfo::mutable_arrayoffsets() {
-  // @@protoc_insertion_point(field_mutable_list:records.arrayoffsets_to_wordinfo.arrayoffsets)
+payload_arrayoffsets_to_wordinfo::mutable_arrayoffsets() {
+  // @@protoc_insertion_point(field_mutable_list:records.payload.arrayoffsets_to_wordinfo.arrayoffsets)
   return &arrayoffsets_;
 }
 
-// repeated .records.wordinfo wordinfos = 2;
-inline int arrayoffsets_to_wordinfo::wordinfos_size() const {
+// repeated .records.payload.arrayoffsets_to_wordinfo.wordinfo wordinfos = 2;
+inline int payload_arrayoffsets_to_wordinfo::wordinfos_size() const {
   return wordinfos_.size();
 }
-inline void arrayoffsets_to_wordinfo::clear_wordinfos() {
+inline void payload_arrayoffsets_to_wordinfo::clear_wordinfos() {
   wordinfos_.Clear();
 }
-inline const ::records::wordinfo& arrayoffsets_to_wordinfo::wordinfos(int index) const {
-  // @@protoc_insertion_point(field_get:records.arrayoffsets_to_wordinfo.wordinfos)
+inline const ::records::payload_arrayoffsets_to_wordinfo_wordinfo& payload_arrayoffsets_to_wordinfo::wordinfos(int index) const {
+  // @@protoc_insertion_point(field_get:records.payload.arrayoffsets_to_wordinfo.wordinfos)
   return wordinfos_.Get(index);
 }
-inline ::records::wordinfo* arrayoffsets_to_wordinfo::mutable_wordinfos(int index) {
-  // @@protoc_insertion_point(field_mutable:records.arrayoffsets_to_wordinfo.wordinfos)
+inline ::records::payload_arrayoffsets_to_wordinfo_wordinfo* payload_arrayoffsets_to_wordinfo::mutable_wordinfos(int index) {
+  // @@protoc_insertion_point(field_mutable:records.payload.arrayoffsets_to_wordinfo.wordinfos)
   return wordinfos_.Mutable(index);
 }
-inline ::records::wordinfo* arrayoffsets_to_wordinfo::add_wordinfos() {
-  // @@protoc_insertion_point(field_add:records.arrayoffsets_to_wordinfo.wordinfos)
+inline ::records::payload_arrayoffsets_to_wordinfo_wordinfo* payload_arrayoffsets_to_wordinfo::add_wordinfos() {
+  // @@protoc_insertion_point(field_add:records.payload.arrayoffsets_to_wordinfo.wordinfos)
   return wordinfos_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::records::wordinfo >&
-arrayoffsets_to_wordinfo::wordinfos() const {
-  // @@protoc_insertion_point(field_list:records.arrayoffsets_to_wordinfo.wordinfos)
+inline const ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo_wordinfo >&
+payload_arrayoffsets_to_wordinfo::wordinfos() const {
+  // @@protoc_insertion_point(field_list:records.payload.arrayoffsets_to_wordinfo.wordinfos)
   return wordinfos_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::records::wordinfo >*
-arrayoffsets_to_wordinfo::mutable_wordinfos() {
-  // @@protoc_insertion_point(field_mutable_list:records.arrayoffsets_to_wordinfo.wordinfos)
+inline ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo_wordinfo >*
+payload_arrayoffsets_to_wordinfo::mutable_wordinfos() {
+  // @@protoc_insertion_point(field_mutable_list:records.payload.arrayoffsets_to_wordinfo.wordinfos)
   return &wordinfos_;
 }
 
@@ -659,31 +663,31 @@ arrayoffsets_to_wordinfo::mutable_wordinfos() {
 
 // payload
 
-// repeated .records.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+// repeated .records.payload.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
 inline int payload::arrayoffsets_to_wordinfos_size() const {
   return arrayoffsets_to_wordinfos_.size();
 }
 inline void payload::clear_arrayoffsets_to_wordinfos() {
   arrayoffsets_to_wordinfos_.Clear();
 }
-inline const ::records::arrayoffsets_to_wordinfo& payload::arrayoffsets_to_wordinfos(int index) const {
+inline const ::records::payload_arrayoffsets_to_wordinfo& payload::arrayoffsets_to_wordinfos(int index) const {
   // @@protoc_insertion_point(field_get:records.payload.arrayoffsets_to_wordinfos)
   return arrayoffsets_to_wordinfos_.Get(index);
 }
-inline ::records::arrayoffsets_to_wordinfo* payload::mutable_arrayoffsets_to_wordinfos(int index) {
+inline ::records::payload_arrayoffsets_to_wordinfo* payload::mutable_arrayoffsets_to_wordinfos(int index) {
   // @@protoc_insertion_point(field_mutable:records.payload.arrayoffsets_to_wordinfos)
   return arrayoffsets_to_wordinfos_.Mutable(index);
 }
-inline ::records::arrayoffsets_to_wordinfo* payload::add_arrayoffsets_to_wordinfos() {
+inline ::records::payload_arrayoffsets_to_wordinfo* payload::add_arrayoffsets_to_wordinfos() {
   // @@protoc_insertion_point(field_add:records.payload.arrayoffsets_to_wordinfos)
   return arrayoffsets_to_wordinfos_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::records::arrayoffsets_to_wordinfo >&
+inline const ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo >&
 payload::arrayoffsets_to_wordinfos() const {
   // @@protoc_insertion_point(field_list:records.payload.arrayoffsets_to_wordinfos)
   return arrayoffsets_to_wordinfos_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::records::arrayoffsets_to_wordinfo >*
+inline ::google::protobuf::RepeatedPtrField< ::records::payload_arrayoffsets_to_wordinfo >*
 payload::mutable_arrayoffsets_to_wordinfos() {
   // @@protoc_insertion_point(field_mutable_list:records.payload.arrayoffsets_to_wordinfos)
   return &arrayoffsets_to_wordinfos_;

@@ -23,15 +23,15 @@ namespace {
 const ::google::protobuf::Descriptor* header_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   header_reflection_ = NULL;
-const ::google::protobuf::Descriptor* wordinfo_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  wordinfo_reflection_ = NULL;
-const ::google::protobuf::Descriptor* arrayoffsets_to_wordinfo_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  arrayoffsets_to_wordinfo_reflection_ = NULL;
 const ::google::protobuf::Descriptor* payload_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   payload_reflection_ = NULL;
+const ::google::protobuf::Descriptor* payload_arrayoffsets_to_wordinfo_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  payload_arrayoffsets_to_wordinfo_reflection_ = NULL;
+const ::google::protobuf::Descriptor* payload_arrayoffsets_to_wordinfo_wordinfo_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  payload_arrayoffsets_to_wordinfo_wordinfo_reflection_ = NULL;
 
 }  // namespace
 
@@ -58,40 +58,7 @@ void protobuf_AssignDesc_records_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(header));
-  wordinfo_descriptor_ = file->message_type(1);
-  static const int wordinfo_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(wordinfo, stemmedoffset_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(wordinfo, suffixoffset_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(wordinfo, suffixtext_),
-  };
-  wordinfo_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      wordinfo_descriptor_,
-      wordinfo::default_instance_,
-      wordinfo_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(wordinfo, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(wordinfo, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(wordinfo));
-  arrayoffsets_to_wordinfo_descriptor_ = file->message_type(2);
-  static const int arrayoffsets_to_wordinfo_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(arrayoffsets_to_wordinfo, arrayoffsets_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(arrayoffsets_to_wordinfo, wordinfos_),
-  };
-  arrayoffsets_to_wordinfo_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      arrayoffsets_to_wordinfo_descriptor_,
-      arrayoffsets_to_wordinfo::default_instance_,
-      arrayoffsets_to_wordinfo_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(arrayoffsets_to_wordinfo, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(arrayoffsets_to_wordinfo, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(arrayoffsets_to_wordinfo));
-  payload_descriptor_ = file->message_type(3);
+  payload_descriptor_ = file->message_type(1);
   static const int payload_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload, arrayoffsets_to_wordinfos_),
   };
@@ -106,6 +73,39 @@ void protobuf_AssignDesc_records_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(payload));
+  payload_arrayoffsets_to_wordinfo_descriptor_ = payload_descriptor_->nested_type(0);
+  static const int payload_arrayoffsets_to_wordinfo_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo, arrayoffsets_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo, wordinfos_),
+  };
+  payload_arrayoffsets_to_wordinfo_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      payload_arrayoffsets_to_wordinfo_descriptor_,
+      payload_arrayoffsets_to_wordinfo::default_instance_,
+      payload_arrayoffsets_to_wordinfo_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(payload_arrayoffsets_to_wordinfo));
+  payload_arrayoffsets_to_wordinfo_wordinfo_descriptor_ = payload_arrayoffsets_to_wordinfo_descriptor_->nested_type(0);
+  static const int payload_arrayoffsets_to_wordinfo_wordinfo_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo_wordinfo, stemmedoffset_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo_wordinfo, suffixoffset_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo_wordinfo, suffixtext_),
+  };
+  payload_arrayoffsets_to_wordinfo_wordinfo_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      payload_arrayoffsets_to_wordinfo_wordinfo_descriptor_,
+      payload_arrayoffsets_to_wordinfo_wordinfo::default_instance_,
+      payload_arrayoffsets_to_wordinfo_wordinfo_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo_wordinfo, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(payload_arrayoffsets_to_wordinfo_wordinfo, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(payload_arrayoffsets_to_wordinfo_wordinfo));
 }
 
 namespace {
@@ -121,11 +121,11 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     header_descriptor_, &header::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    wordinfo_descriptor_, &wordinfo::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    arrayoffsets_to_wordinfo_descriptor_, &arrayoffsets_to_wordinfo::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     payload_descriptor_, &payload::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    payload_arrayoffsets_to_wordinfo_descriptor_, &payload_arrayoffsets_to_wordinfo::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    payload_arrayoffsets_to_wordinfo_wordinfo_descriptor_, &payload_arrayoffsets_to_wordinfo_wordinfo::default_instance());
 }
 
 }  // namespace
@@ -133,12 +133,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_records_2eproto() {
   delete header::default_instance_;
   delete header_reflection_;
-  delete wordinfo::default_instance_;
-  delete wordinfo_reflection_;
-  delete arrayoffsets_to_wordinfo::default_instance_;
-  delete arrayoffsets_to_wordinfo_reflection_;
   delete payload::default_instance_;
   delete payload_reflection_;
+  delete payload_arrayoffsets_to_wordinfo::default_instance_;
+  delete payload_arrayoffsets_to_wordinfo_reflection_;
+  delete payload_arrayoffsets_to_wordinfo_wordinfo::default_instance_;
+  delete payload_arrayoffsets_to_wordinfo_wordinfo_reflection_;
 }
 
 void protobuf_AddDesc_records_2eproto() {
@@ -149,23 +149,24 @@ void protobuf_AddDesc_records_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\rrecords.proto\022\007records\"+\n\006header\022\017\n\007ve"
-    "rsion\030\001 \002(\004\022\020\n\010high_seq\030\002 \002(\004\"K\n\010wordinf"
-    "o\022\025\n\rstemmedOffset\030\001 \002(\004\022\024\n\014suffixOffset"
-    "\030\002 \002(\003\022\022\n\nsuffixText\030\003 \002(\t\"V\n\030arrayoffse"
-    "ts_to_wordinfo\022\024\n\014arrayoffsets\030\001 \003(\004\022$\n\t"
-    "wordinfos\030\002 \003(\0132\021.records.wordinfo\"O\n\007pa"
-    "yload\022D\n\031arrayoffsets_to_wordinfos\030\001 \003(\013"
-    "2!.records.arrayoffsets_to_wordinfo", 315);
+    "rsion\030\001 \002(\004\022\020\n\010high_seq\030\002 \002(\004\"\236\002\n\007payloa"
+    "d\022L\n\031arrayoffsets_to_wordinfos\030\001 \003(\0132).r"
+    "ecords.payload.arrayoffsets_to_wordinfo\032"
+    "\304\001\n\030arrayoffsets_to_wordinfo\022\024\n\014arrayoff"
+    "sets\030\001 \003(\004\022E\n\twordinfos\030\002 \003(\01322.records."
+    "payload.arrayoffsets_to_wordinfo.wordinf"
+    "o\032K\n\010wordinfo\022\025\n\rstemmedOffset\030\001 \002(\004\022\024\n\014"
+    "suffixOffset\030\002 \002(\003\022\022\n\nsuffixText\030\003 \002(\t", 358);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "records.proto", &protobuf_RegisterTypes);
   header::default_instance_ = new header();
-  wordinfo::default_instance_ = new wordinfo();
-  arrayoffsets_to_wordinfo::default_instance_ = new arrayoffsets_to_wordinfo();
   payload::default_instance_ = new payload();
+  payload_arrayoffsets_to_wordinfo::default_instance_ = new payload_arrayoffsets_to_wordinfo();
+  payload_arrayoffsets_to_wordinfo_wordinfo::default_instance_ = new payload_arrayoffsets_to_wordinfo_wordinfo();
   header::default_instance_->InitAsDefaultInstance();
-  wordinfo::default_instance_->InitAsDefaultInstance();
-  arrayoffsets_to_wordinfo::default_instance_->InitAsDefaultInstance();
   payload::default_instance_->InitAsDefaultInstance();
+  payload_arrayoffsets_to_wordinfo::default_instance_->InitAsDefaultInstance();
+  payload_arrayoffsets_to_wordinfo_wordinfo::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_records_2eproto);
 }
 
@@ -454,28 +455,28 @@ void header::Swap(header* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int wordinfo::kStemmedOffsetFieldNumber;
-const int wordinfo::kSuffixOffsetFieldNumber;
-const int wordinfo::kSuffixTextFieldNumber;
+const int payload_arrayoffsets_to_wordinfo_wordinfo::kStemmedOffsetFieldNumber;
+const int payload_arrayoffsets_to_wordinfo_wordinfo::kSuffixOffsetFieldNumber;
+const int payload_arrayoffsets_to_wordinfo_wordinfo::kSuffixTextFieldNumber;
 #endif  // !_MSC_VER
 
-wordinfo::wordinfo()
+payload_arrayoffsets_to_wordinfo_wordinfo::payload_arrayoffsets_to_wordinfo_wordinfo()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:records.wordinfo)
+  // @@protoc_insertion_point(constructor:records.payload.arrayoffsets_to_wordinfo.wordinfo)
 }
 
-void wordinfo::InitAsDefaultInstance() {
+void payload_arrayoffsets_to_wordinfo_wordinfo::InitAsDefaultInstance() {
 }
 
-wordinfo::wordinfo(const wordinfo& from)
+payload_arrayoffsets_to_wordinfo_wordinfo::payload_arrayoffsets_to_wordinfo_wordinfo(const payload_arrayoffsets_to_wordinfo_wordinfo& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:records.wordinfo)
+  // @@protoc_insertion_point(copy_constructor:records.payload.arrayoffsets_to_wordinfo.wordinfo)
 }
 
-void wordinfo::SharedCtor() {
+void payload_arrayoffsets_to_wordinfo_wordinfo::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   stemmedoffset_ = GOOGLE_ULONGLONG(0);
@@ -484,12 +485,12 @@ void wordinfo::SharedCtor() {
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-wordinfo::~wordinfo() {
-  // @@protoc_insertion_point(destructor:records.wordinfo)
+payload_arrayoffsets_to_wordinfo_wordinfo::~payload_arrayoffsets_to_wordinfo_wordinfo() {
+  // @@protoc_insertion_point(destructor:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   SharedDtor();
 }
 
-void wordinfo::SharedDtor() {
+void payload_arrayoffsets_to_wordinfo_wordinfo::SharedDtor() {
   if (suffixtext_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete suffixtext_;
   }
@@ -497,30 +498,30 @@ void wordinfo::SharedDtor() {
   }
 }
 
-void wordinfo::SetCachedSize(int size) const {
+void payload_arrayoffsets_to_wordinfo_wordinfo::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* wordinfo::descriptor() {
+const ::google::protobuf::Descriptor* payload_arrayoffsets_to_wordinfo_wordinfo::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return wordinfo_descriptor_;
+  return payload_arrayoffsets_to_wordinfo_wordinfo_descriptor_;
 }
 
-const wordinfo& wordinfo::default_instance() {
+const payload_arrayoffsets_to_wordinfo_wordinfo& payload_arrayoffsets_to_wordinfo_wordinfo::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_records_2eproto();
   return *default_instance_;
 }
 
-wordinfo* wordinfo::default_instance_ = NULL;
+payload_arrayoffsets_to_wordinfo_wordinfo* payload_arrayoffsets_to_wordinfo_wordinfo::default_instance_ = NULL;
 
-wordinfo* wordinfo::New() const {
-  return new wordinfo;
+payload_arrayoffsets_to_wordinfo_wordinfo* payload_arrayoffsets_to_wordinfo_wordinfo::New() const {
+  return new payload_arrayoffsets_to_wordinfo_wordinfo;
 }
 
-void wordinfo::Clear() {
+void payload_arrayoffsets_to_wordinfo_wordinfo::Clear() {
 #define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
-  &reinterpret_cast<wordinfo*>(16)->f) - \
+  &reinterpret_cast<payload_arrayoffsets_to_wordinfo_wordinfo*>(16)->f) - \
    reinterpret_cast<char*>(16))
 
 #define ZR_(first, last) do {                              \
@@ -545,11 +546,11 @@ void wordinfo::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool wordinfo::MergePartialFromCodedStream(
+bool payload_arrayoffsets_to_wordinfo_wordinfo::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:records.wordinfo)
+  // @@protoc_insertion_point(parse_start:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -615,17 +616,17 @@ bool wordinfo::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:records.wordinfo)
+  // @@protoc_insertion_point(parse_success:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:records.wordinfo)
+  // @@protoc_insertion_point(parse_failure:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   return false;
 #undef DO_
 }
 
-void wordinfo::SerializeWithCachedSizes(
+void payload_arrayoffsets_to_wordinfo_wordinfo::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:records.wordinfo)
+  // @@protoc_insertion_point(serialize_start:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   // required uint64 stemmedOffset = 1;
   if (has_stemmedoffset()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->stemmedoffset(), output);
@@ -650,12 +651,12 @@ void wordinfo::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:records.wordinfo)
+  // @@protoc_insertion_point(serialize_end:records.payload.arrayoffsets_to_wordinfo.wordinfo)
 }
 
-::google::protobuf::uint8* wordinfo::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* payload_arrayoffsets_to_wordinfo_wordinfo::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:records.wordinfo)
+  // @@protoc_insertion_point(serialize_to_array_start:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   // required uint64 stemmedOffset = 1;
   if (has_stemmedoffset()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->stemmedoffset(), target);
@@ -681,11 +682,11 @@ void wordinfo::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:records.wordinfo)
+  // @@protoc_insertion_point(serialize_to_array_end:records.payload.arrayoffsets_to_wordinfo.wordinfo)
   return target;
 }
 
-int wordinfo::ByteSize() const {
+int payload_arrayoffsets_to_wordinfo_wordinfo::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -722,10 +723,10 @@ int wordinfo::ByteSize() const {
   return total_size;
 }
 
-void wordinfo::MergeFrom(const ::google::protobuf::Message& from) {
+void payload_arrayoffsets_to_wordinfo_wordinfo::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const wordinfo* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const wordinfo*>(
+  const payload_arrayoffsets_to_wordinfo_wordinfo* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const payload_arrayoffsets_to_wordinfo_wordinfo*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -734,7 +735,7 @@ void wordinfo::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void wordinfo::MergeFrom(const wordinfo& from) {
+void payload_arrayoffsets_to_wordinfo_wordinfo::MergeFrom(const payload_arrayoffsets_to_wordinfo_wordinfo& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_stemmedoffset()) {
@@ -750,25 +751,25 @@ void wordinfo::MergeFrom(const wordinfo& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void wordinfo::CopyFrom(const ::google::protobuf::Message& from) {
+void payload_arrayoffsets_to_wordinfo_wordinfo::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void wordinfo::CopyFrom(const wordinfo& from) {
+void payload_arrayoffsets_to_wordinfo_wordinfo::CopyFrom(const payload_arrayoffsets_to_wordinfo_wordinfo& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool wordinfo::IsInitialized() const {
+bool payload_arrayoffsets_to_wordinfo_wordinfo::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   return true;
 }
 
-void wordinfo::Swap(wordinfo* other) {
+void payload_arrayoffsets_to_wordinfo_wordinfo::Swap(payload_arrayoffsets_to_wordinfo_wordinfo* other) {
   if (other != this) {
     std::swap(stemmedoffset_, other->stemmedoffset_);
     std::swap(suffixoffset_, other->suffixoffset_);
@@ -779,86 +780,86 @@ void wordinfo::Swap(wordinfo* other) {
   }
 }
 
-::google::protobuf::Metadata wordinfo::GetMetadata() const {
+::google::protobuf::Metadata payload_arrayoffsets_to_wordinfo_wordinfo::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = wordinfo_descriptor_;
-  metadata.reflection = wordinfo_reflection_;
+  metadata.descriptor = payload_arrayoffsets_to_wordinfo_wordinfo_descriptor_;
+  metadata.reflection = payload_arrayoffsets_to_wordinfo_wordinfo_reflection_;
   return metadata;
 }
 
 
-// ===================================================================
+// -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int arrayoffsets_to_wordinfo::kArrayoffsetsFieldNumber;
-const int arrayoffsets_to_wordinfo::kWordinfosFieldNumber;
+const int payload_arrayoffsets_to_wordinfo::kArrayoffsetsFieldNumber;
+const int payload_arrayoffsets_to_wordinfo::kWordinfosFieldNumber;
 #endif  // !_MSC_VER
 
-arrayoffsets_to_wordinfo::arrayoffsets_to_wordinfo()
+payload_arrayoffsets_to_wordinfo::payload_arrayoffsets_to_wordinfo()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(constructor:records.payload.arrayoffsets_to_wordinfo)
 }
 
-void arrayoffsets_to_wordinfo::InitAsDefaultInstance() {
+void payload_arrayoffsets_to_wordinfo::InitAsDefaultInstance() {
 }
 
-arrayoffsets_to_wordinfo::arrayoffsets_to_wordinfo(const arrayoffsets_to_wordinfo& from)
+payload_arrayoffsets_to_wordinfo::payload_arrayoffsets_to_wordinfo(const payload_arrayoffsets_to_wordinfo& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(copy_constructor:records.payload.arrayoffsets_to_wordinfo)
 }
 
-void arrayoffsets_to_wordinfo::SharedCtor() {
+void payload_arrayoffsets_to_wordinfo::SharedCtor() {
   _cached_size_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-arrayoffsets_to_wordinfo::~arrayoffsets_to_wordinfo() {
-  // @@protoc_insertion_point(destructor:records.arrayoffsets_to_wordinfo)
+payload_arrayoffsets_to_wordinfo::~payload_arrayoffsets_to_wordinfo() {
+  // @@protoc_insertion_point(destructor:records.payload.arrayoffsets_to_wordinfo)
   SharedDtor();
 }
 
-void arrayoffsets_to_wordinfo::SharedDtor() {
+void payload_arrayoffsets_to_wordinfo::SharedDtor() {
   if (this != default_instance_) {
   }
 }
 
-void arrayoffsets_to_wordinfo::SetCachedSize(int size) const {
+void payload_arrayoffsets_to_wordinfo::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* arrayoffsets_to_wordinfo::descriptor() {
+const ::google::protobuf::Descriptor* payload_arrayoffsets_to_wordinfo::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return arrayoffsets_to_wordinfo_descriptor_;
+  return payload_arrayoffsets_to_wordinfo_descriptor_;
 }
 
-const arrayoffsets_to_wordinfo& arrayoffsets_to_wordinfo::default_instance() {
+const payload_arrayoffsets_to_wordinfo& payload_arrayoffsets_to_wordinfo::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_records_2eproto();
   return *default_instance_;
 }
 
-arrayoffsets_to_wordinfo* arrayoffsets_to_wordinfo::default_instance_ = NULL;
+payload_arrayoffsets_to_wordinfo* payload_arrayoffsets_to_wordinfo::default_instance_ = NULL;
 
-arrayoffsets_to_wordinfo* arrayoffsets_to_wordinfo::New() const {
-  return new arrayoffsets_to_wordinfo;
+payload_arrayoffsets_to_wordinfo* payload_arrayoffsets_to_wordinfo::New() const {
+  return new payload_arrayoffsets_to_wordinfo;
 }
 
-void arrayoffsets_to_wordinfo::Clear() {
+void payload_arrayoffsets_to_wordinfo::Clear() {
   arrayoffsets_.Clear();
   wordinfos_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
-bool arrayoffsets_to_wordinfo::MergePartialFromCodedStream(
+bool payload_arrayoffsets_to_wordinfo::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(parse_start:records.payload.arrayoffsets_to_wordinfo)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -883,7 +884,7 @@ bool arrayoffsets_to_wordinfo::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated .records.wordinfo wordinfos = 2;
+      // repeated .records.payload.arrayoffsets_to_wordinfo.wordinfo wordinfos = 2;
       case 2: {
         if (tag == 18) {
          parse_wordinfos:
@@ -911,24 +912,24 @@ bool arrayoffsets_to_wordinfo::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(parse_success:records.payload.arrayoffsets_to_wordinfo)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(parse_failure:records.payload.arrayoffsets_to_wordinfo)
   return false;
 #undef DO_
 }
 
-void arrayoffsets_to_wordinfo::SerializeWithCachedSizes(
+void payload_arrayoffsets_to_wordinfo::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(serialize_start:records.payload.arrayoffsets_to_wordinfo)
   // repeated uint64 arrayoffsets = 1;
   for (int i = 0; i < this->arrayoffsets_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(
       1, this->arrayoffsets(i), output);
   }
 
-  // repeated .records.wordinfo wordinfos = 2;
+  // repeated .records.payload.arrayoffsets_to_wordinfo.wordinfo wordinfos = 2;
   for (int i = 0; i < this->wordinfos_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->wordinfos(i), output);
@@ -938,19 +939,19 @@ void arrayoffsets_to_wordinfo::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(serialize_end:records.payload.arrayoffsets_to_wordinfo)
 }
 
-::google::protobuf::uint8* arrayoffsets_to_wordinfo::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* payload_arrayoffsets_to_wordinfo::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(serialize_to_array_start:records.payload.arrayoffsets_to_wordinfo)
   // repeated uint64 arrayoffsets = 1;
   for (int i = 0; i < this->arrayoffsets_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteUInt64ToArray(1, this->arrayoffsets(i), target);
   }
 
-  // repeated .records.wordinfo wordinfos = 2;
+  // repeated .records.payload.arrayoffsets_to_wordinfo.wordinfo wordinfos = 2;
   for (int i = 0; i < this->wordinfos_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -961,11 +962,11 @@ void arrayoffsets_to_wordinfo::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:records.arrayoffsets_to_wordinfo)
+  // @@protoc_insertion_point(serialize_to_array_end:records.payload.arrayoffsets_to_wordinfo)
   return target;
 }
 
-int arrayoffsets_to_wordinfo::ByteSize() const {
+int payload_arrayoffsets_to_wordinfo::ByteSize() const {
   int total_size = 0;
 
   // repeated uint64 arrayoffsets = 1;
@@ -978,7 +979,7 @@ int arrayoffsets_to_wordinfo::ByteSize() const {
     total_size += 1 * this->arrayoffsets_size() + data_size;
   }
 
-  // repeated .records.wordinfo wordinfos = 2;
+  // repeated .records.payload.arrayoffsets_to_wordinfo.wordinfo wordinfos = 2;
   total_size += 1 * this->wordinfos_size();
   for (int i = 0; i < this->wordinfos_size(); i++) {
     total_size +=
@@ -997,10 +998,10 @@ int arrayoffsets_to_wordinfo::ByteSize() const {
   return total_size;
 }
 
-void arrayoffsets_to_wordinfo::MergeFrom(const ::google::protobuf::Message& from) {
+void payload_arrayoffsets_to_wordinfo::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const arrayoffsets_to_wordinfo* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const arrayoffsets_to_wordinfo*>(
+  const payload_arrayoffsets_to_wordinfo* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const payload_arrayoffsets_to_wordinfo*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -1009,32 +1010,32 @@ void arrayoffsets_to_wordinfo::MergeFrom(const ::google::protobuf::Message& from
   }
 }
 
-void arrayoffsets_to_wordinfo::MergeFrom(const arrayoffsets_to_wordinfo& from) {
+void payload_arrayoffsets_to_wordinfo::MergeFrom(const payload_arrayoffsets_to_wordinfo& from) {
   GOOGLE_CHECK_NE(&from, this);
   arrayoffsets_.MergeFrom(from.arrayoffsets_);
   wordinfos_.MergeFrom(from.wordinfos_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void arrayoffsets_to_wordinfo::CopyFrom(const ::google::protobuf::Message& from) {
+void payload_arrayoffsets_to_wordinfo::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void arrayoffsets_to_wordinfo::CopyFrom(const arrayoffsets_to_wordinfo& from) {
+void payload_arrayoffsets_to_wordinfo::CopyFrom(const payload_arrayoffsets_to_wordinfo& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool arrayoffsets_to_wordinfo::IsInitialized() const {
+bool payload_arrayoffsets_to_wordinfo::IsInitialized() const {
 
   if (!::google::protobuf::internal::AllAreInitialized(this->wordinfos())) return false;
   return true;
 }
 
-void arrayoffsets_to_wordinfo::Swap(arrayoffsets_to_wordinfo* other) {
+void payload_arrayoffsets_to_wordinfo::Swap(payload_arrayoffsets_to_wordinfo* other) {
   if (other != this) {
     arrayoffsets_.Swap(&other->arrayoffsets_);
     wordinfos_.Swap(&other->wordinfos_);
@@ -1044,16 +1045,16 @@ void arrayoffsets_to_wordinfo::Swap(arrayoffsets_to_wordinfo* other) {
   }
 }
 
-::google::protobuf::Metadata arrayoffsets_to_wordinfo::GetMetadata() const {
+::google::protobuf::Metadata payload_arrayoffsets_to_wordinfo::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = arrayoffsets_to_wordinfo_descriptor_;
-  metadata.reflection = arrayoffsets_to_wordinfo_reflection_;
+  metadata.descriptor = payload_arrayoffsets_to_wordinfo_descriptor_;
+  metadata.reflection = payload_arrayoffsets_to_wordinfo_reflection_;
   return metadata;
 }
 
 
-// ===================================================================
+// -------------------------------------------------------------------
 
 #ifndef _MSC_VER
 const int payload::kArrayoffsetsToWordinfosFieldNumber;
@@ -1127,7 +1128,7 @@ bool payload::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .records.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+      // repeated .records.payload.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
       case 1: {
         if (tag == 10) {
          parse_arrayoffsets_to_wordinfos:
@@ -1166,7 +1167,7 @@ failure:
 void payload::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:records.payload)
-  // repeated .records.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+  // repeated .records.payload.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
   for (int i = 0; i < this->arrayoffsets_to_wordinfos_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->arrayoffsets_to_wordinfos(i), output);
@@ -1182,7 +1183,7 @@ void payload::SerializeWithCachedSizes(
 ::google::protobuf::uint8* payload::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:records.payload)
-  // repeated .records.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+  // repeated .records.payload.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
   for (int i = 0; i < this->arrayoffsets_to_wordinfos_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -1200,7 +1201,7 @@ void payload::SerializeWithCachedSizes(
 int payload::ByteSize() const {
   int total_size = 0;
 
-  // repeated .records.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
+  // repeated .records.payload.arrayoffsets_to_wordinfo arrayoffsets_to_wordinfos = 1;
   total_size += 1 * this->arrayoffsets_to_wordinfos_size();
   for (int i = 0; i < this->arrayoffsets_to_wordinfos_size(); i++) {
     total_size +=

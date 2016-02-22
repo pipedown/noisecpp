@@ -9,7 +9,7 @@
 #ifndef porter_h
 #define porter_h
 
-int porter_stem_inplace(char * b, int k);
+extern "C" int porter_stem_inplace(char * b, int k);
 
 // "Abc 123abc abc123 123 a"
 /*
@@ -38,11 +38,11 @@ sufoff:  15
 
 struct StemmedWord {
     size_t stemmed_offset;
-    const char* stemmed;
+    const char* stemmed = nullptr;
     size_t stemmed_len;
 
     size_t suffix_offset;
-    const char* suffix;
+    const char* suffix = nullptr;
     size_t suffix_len;
 };
 

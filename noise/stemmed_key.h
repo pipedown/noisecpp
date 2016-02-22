@@ -19,6 +19,15 @@ public:
         Word,
         DocSeq,
     };
+private:
+    struct Segment {
+        SegmentType type;
+        size_t offset;
+    };
+    std::vector<Segment> segments;
+
+    std::string fullkey;
+public:
     StemmedKeyBuilder() {
         segments.reserve(10);
         fullkey.reserve(100); //magic reserve numbers that are completely arbitrary
@@ -83,21 +92,14 @@ public:
 
     void Pop(SegmentType expected_type) {
         assert(segments.back().type == expected_type);
+        fullkey.resize(segments.back().offset);
         segments.pop_back();
     }
 
     SegmentType LastPushedSegmentType() {
         return segments.size() ? segments.back().type : None;
     }
-private:
 
-    struct Segment {
-        SegmentType type;
-        size_t offset;
-    };
-    std::vector<Segment> segments;
-
-    std::string fullkey;
 };
 
 
