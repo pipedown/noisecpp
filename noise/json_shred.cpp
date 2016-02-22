@@ -350,7 +350,6 @@ void JsonShredder::AddToBatch(rocksdb::WriteBatch* batch) {
             }
         }
         std::string payload = pbpayload.SerializeAsString();
-        printf("payload: %zu %s", payload.length(), payload.c_str());
         batch->Put(wordPathInfos.first,
                   payload);
     }

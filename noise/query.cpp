@@ -104,17 +104,13 @@ public:
 
             std::string data = iter_->value().ToString();
 
-            std::cout << "data:" << data << " len: " << data.length() << "\n";
-
             records::payload payload;
-            bool b = payload.ParseFromArray(data.c_str(),
-                                   (int)data.length());
+            if(!payload.ParseFromArray(data.c_str(), (int)data.length()))
+                throw std::runtime_error("Couldn't parse proto buf");
+
 
             for (auto aos_wis : payload.arrayoffsets_to_wordinfos()) {
                 for (auto wi : aos_wis.wordinfos()) {
-                    std::cout << "stemmedoffset: " << wi.stemmedoffset() <<
-                                " suffixoffset: " << wi.suffixoffset() <<
-                                " suffixtext: " << wi.suffixtext() <<"\n";
                     if (stemmed_offset_ == wi.stemmedoffset() &&
                         suffix_offset_ == wi.suffixoffset() &&
                         suffix_ == wi.suffixtext()) {
@@ -371,15 +367,6 @@ std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
     assert(stack.size() == 1);
     return std::move(stack.top());
 }
-
-
-
-
-
-
-
-
-
 
 
 

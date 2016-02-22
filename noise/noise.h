@@ -47,6 +47,8 @@ public:
     static void Delete(const std::string& name);
 
     bool Add(const std::string& json, std::string* err);
+
+    bool FetchId(uint64_t seq, std::string* id);
     
     rocksdb::Status Flush();
 };
