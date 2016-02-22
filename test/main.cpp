@@ -30,32 +30,25 @@ int main(int argc, const char * argv[]) {
     Noise::Index index;
     std::string error = index.Open(argv[1]);
     if (error.length()) {
-        fprintf(stderr, "Error opening index (%s): %s\n", argv[0], error.c_str());
+        fprintf(stderr, "Error opening index (%s): %s\n", argv[1], error.c_str());
         return 1;
     }
 
-    rocksdb::ReadOptions read;
-    rocksdb::Iterator* i = index.GetDB()->NewIterator(read);
-
-    i->SeekToFirst();
-
-    while (i->Valid()) {
-        printf("key: %s len: %zu\n", i->key().data(), i->key().size());
-        i->Next();
-    }
-
-    while (true) {
+    while (std::getline(querystream, line)) {
         if (line.size() != 0 && line.find("//") != 0) {
             Noise::Query query(line);
 
             std::unique_ptr<Noise::Results> results(query.Execute(&index));
 
-            uint64_t seq = results->GetNext();
-            while(seq) {
-                std::cout << "id: " << seq <<"\n";
+            uint64_t seq;
+            std::string id;
+            while ((seq = results->GetNext())) {
+                if (index.FetchId(seq, &id))
+                    std::cout << "id: " << id << " seq:"<< seq <<"\n";
+                else
+                    std::cout << "Failure to looku seq " << seq << "\n";
             }
         }
-        std::getline(querystream, line);
     }
 
     return 0;

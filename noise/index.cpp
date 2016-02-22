@@ -120,4 +120,12 @@ rocksdb::Status Index::Flush()
     return status;
 }
 
+bool Index::FetchId(uint64_t seq, std::string* id) {
+    std::string key("S");
+    key += std::to_string(seq);
+    rocksdb::Status status = rocks->Get(ropt, key, id);
+    id->erase(id->begin());
+    return status.ok();
+}
+
 namespace_Noise_end

@@ -101,7 +101,7 @@ int main(int argc, char * const argv[]) {
     i->SeekToFirst();
 
     while (i->Valid()) {
-        printf("key: %s len: %zu\n", i->key().data(), i->key().size());
+        printf("key: %s\n", i->key().ToString().c_str());
         i->Next();
     }
 
