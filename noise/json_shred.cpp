@@ -10,16 +10,14 @@
 #include <yajl/yajl_parse.h>
 #include <exception>
 
-#include <string>
-#include <vector>
-#include <map>
 #include "rocksdb/db.h"
 
-#include "porter.h"
+#include "noise.h"
+#include "stems.h"
 #include "records.pb.h"
-#include "stemmed_key.h"
+#include "key_builder.h"
 
-#include "json_shred.hpp"
+#include "json_shred.h"
 
 
 namespace_Noise
@@ -29,7 +27,7 @@ void ParseCtx::IncTopArrayOffset() {
     /* we encounter a new element. if we are a child element of an array
      increment the offset. If we aren't (we are the root value or a map
      value) we don't increment */
-    if (keybuilder.LastPushedSegmentType() == StemmedKeyBuilder::Array)
+    if (keybuilder.LastPushedSegmentType() == KeyBuilder::Array)
         pathArrayOffsets.back()++;
 }
 
@@ -41,11 +39,12 @@ void ParseCtx::AddEntries(const char* text, size_t textLen) {
         StemmedWord word = stems.Next();
         keybuilder.PushWord(word.stemmed, word.stemmed_len);
         keybuilder.PushDocSeq(docseq);
-        map[keybuilder.Key()][pathArrayOffsets].push_back({word.stemmed_offset,
-                                              string(word.suffix, word.suffix_len),
-                                              long(word.suffix_offset - word.stemmed_offset)});
-        keybuilder.Pop(StemmedKeyBuilder::DocSeq);
-        keybuilder.Pop(StemmedKeyBuilder::Word);
+        map[keybuilder.key()][pathArrayOffsets]
+            .push_back({word.stemmed_offset,
+                        std::string(word.suffix, word.suffix_len),
+                        long(word.suffix_offset - word.stemmed_offset)});
+        keybuilder.Pop(KeyBuilder::DocSeq);
+        keybuilder.Pop(KeyBuilder::Word);
     }
 }
 
@@ -102,7 +101,7 @@ static int callback_number(void * v, const char * s, size_t l)
         }
         if (ctx.expectIdString) {
             ctx.tempbuff = "Expected string in _id field. Found number: ";
-            ctx.tempbuff += string(s, l);
+            ctx.tempbuff += std::string(s, l);
             return 0;
         }
         return 1;
@@ -160,7 +159,7 @@ static int callback_map_key(void* v, const unsigned char * keyVal,
         }
 
         // pop the dummy value
-        ctx.keybuilder.Pop(StemmedKeyBuilder::ObjectKey);
+        ctx.keybuilder.Pop(KeyBuilder::ObjectKey);
 
         // push the real value
         ctx.keybuilder.PushObjectKey((char*)keyVal, keyLen);
@@ -200,7 +199,7 @@ static int callback_end_map(void * v)
             ctx.ignoreChildren--;
             return 1;
         }
-        ctx.keybuilder.Pop(StemmedKeyBuilder::ObjectKey);
+        ctx.keybuilder.Pop(KeyBuilder::ObjectKey);
 
         return 1;
     } catch (std::exception& ) {
@@ -235,7 +234,7 @@ static int callback_end_array(void * v)
     try {
         ParseCtx& ctx = *(ParseCtx*)v;
         ctx.pathArrayOffsets.pop_back();
-        ctx.keybuilder.Pop(StemmedKeyBuilder::Array);
+        ctx.keybuilder.Pop(KeyBuilder::Array);
         if (ctx.ignoreChildren) {
             ctx.ignoreChildren--;
             return 1;
@@ -299,42 +298,42 @@ struct YajlHandle {
 /* if this method throw an exception then the object is invalid */
 bool JsonShredder::Shred(uint64_t docseq,
                          const std::string& json,
-                            std::string* idout,
-                            std::string* errout) {
-    YajlHandle hand(&ctx);
+                         std::string* idout,
+                         std::string* errout) {
+    YajlHandle hand(&ctx_);
     yajl_status stat;
     bool success = true;
-    ctx.docseq = docseq;
+    ctx_.docseq = docseq;
     stat = yajl_parse(hand, (unsigned char*)json.c_str(), json.length());
 
     if (stat == yajl_status_ok)
         stat = yajl_complete_parse(hand);
 
     if (stat == yajl_status_client_canceled) {
-        if (ctx.exception_ptr) {
+        if (ctx_.exception_ptr) {
             // some sorta exception occurred. rethrow.
-            std::rethrow_exception(ctx.exception_ptr);
+            std::rethrow_exception(ctx_.exception_ptr);
         } else {
             // error message must be in tempbuff
-            *errout = ctx.tempbuff;
+            *errout = ctx_.tempbuff;
             success = false;
         }
     } else if (stat != yajl_status_ok) {
         hand.GetError(json, errout);
         success = false;
     }
-    if (ctx.docid.length() == 0) {
+    if (ctx_.docid.length() == 0) {
         *errout = "missing _id field";
         success = false;
     }
-    *idout = ctx.docid;
+    *idout = ctx_.docid;
 
     return success;
 }
 
 void JsonShredder::AddToBatch(rocksdb::WriteBatch* batch) {
     records::payload pbpayload;
-    for (auto wordPathInfos : ctx.map) {
+    for (auto wordPathInfos : ctx_.map) {
         auto* pbarrayoffsets_to_wordinfo =
                                     pbpayload.add_arrayoffsets_to_wordinfos();
         for (auto arrayOffsetsInfos : wordPathInfos.second) {

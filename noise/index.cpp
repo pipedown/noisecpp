@@ -12,8 +12,8 @@
 
 #include "noise.h"
 #include "records.pb.h"
-#include "stemmed_key.h"
-#include "json_shred.hpp"
+#include "key_builder.h"
+#include "json_shred.h"
 #include "porter.h"
 
 namespace_Noise
@@ -69,8 +69,7 @@ void Index::Delete(const std::string& name) {
 }
 
 
-bool Index::Add(const std::string& json, std::string* err)
-{
+bool Index::Add(const std::string& json, std::string* err) {
     std::string id;
     JsonShredder shred;
     if (shred.Shred(highdocseq + 1, json, &id, err)) {
@@ -82,8 +81,7 @@ bool Index::Add(const std::string& json, std::string* err)
     }
 }
 
-rocksdb::Status Index::Flush()
-{
+rocksdb::Status Index::Flush() {
     //look up all doc ids and 'delete' from the seq_to_ids keyspace
     std::vector<rocksdb::Slice> keys;
     for (auto idseq : idStrToIdSeq) {

@@ -9,13 +9,22 @@
 #ifndef noise_h
 #define noise_h
 
-
 // this is a stupid trick to work around Xcode editor indenting inside parens
 #define namespace_Noise namespace Noise {
 #define namespace_Noise_end };
 
 #include <cstdint>
+#include <string>
+#include <vector>
+#include <map>
+#include <stack>
+#include <iostream>
+#include <list>
+#include <memory>
+
 #include <rocksdb/db.h>
+
+using std::unique_ptr;
 
 namespace_Noise
 
@@ -24,9 +33,7 @@ enum OpenOptions {
     Create
 };
 
-class Index
-{
-private:
+class Index {
     rocksdb::DB* rocks;
     rocksdb::WriteOptions wopt;
     rocksdb::ReadOptions  ropt;
