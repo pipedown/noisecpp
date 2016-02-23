@@ -10,7 +10,7 @@ What? No idea.
 * Oh, okay. Xcode, OS X(duh), rocksdb, protobuf. I used brew.
 
 ## To build:
-xcode: press Build. Then cry at the many compilation and link errors.
+xcode: press Build. Would really like someone to create cmake build files.
 
 ## To run:
 Ummm

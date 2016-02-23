@@ -1,22 +1,15 @@
 //
-//  json_shred.hpp
+//  json_shred.h
 //  noise
 //
 //  Created by Damien Katz on 12/11/15.
 //  Copyright © 2015 Damien Katz. All rights reserved.
 //
 
-#ifndef json_shred_hpp
-#define json_shred_hpp
-
-#include "noise.h"
-
+#ifndef json_shred_h
+#define json_shred_h
 
 namespace_Noise
-
-using std::string;
-using std::vector;
-using std::map;
 
 struct word_info
 {
@@ -25,7 +18,7 @@ struct word_info
 
     // the suffix of the stemmed text. When applied over stemmed, the original
     // text is returned.
-    string suffixText;
+    std::string suffixText;
 
     // the start of the suffixText, relative the stemmedOffset, if negative
     // the suffix starts before the stemmed word (in the case of the leading WS)
@@ -33,25 +26,26 @@ struct word_info
 
 };
 
-typedef vector<size_t> array_offsets;
+typedef std::vector<size_t> array_offsets;
 
-typedef map<array_offsets, vector<word_info> > array_offsets_to_word_info;
+typedef std::map<array_offsets, std::vector<word_info> >
+            array_offsets_to_word_info;
 
-typedef map<string, array_offsets_to_word_info > word_path_info_map;
+typedef std::map<std::string, array_offsets_to_word_info > word_path_info_map;
 
 struct ParseCtx {
 public:
-    string docid;
+    std::string docid;
     bool expectIdString = false;
     unsigned long ignoreChildren = 0;
     uint64_t docseq = 0;
-    vector<size_t> pathArrayOffsets;
-    StemmedKeyBuilder keybuilder;
+    std::vector<size_t> pathArrayOffsets;
+    KeyBuilder keybuilder;
 
     word_path_info_map map;
 
     std::exception_ptr exception_ptr = nullptr;
-    string tempbuff;
+    std::string tempbuff;
 
     void IncTopArrayOffset();
     void AddEntries(const char* text, size_t len);
@@ -59,7 +53,7 @@ public:
 
 class JsonShredder {
 private:
-    ParseCtx ctx;
+    ParseCtx ctx_;
 public:
     static void AddPathToString(std::string& path_path, std::string& dest);
 

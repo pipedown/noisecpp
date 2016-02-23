@@ -342,7 +342,6 @@ static void step5(struct stemmer * z)
 extern int porter_stem_inplace(char * b, int k)
 {
     struct stemmer z;
-    if (k <= 1) return k; /*-DEPARTURE-*/
     z.b = b; z.k = k; /* copy the parameters into z */
 
     /* With this line, strings of length 1 or 2 don't go through the

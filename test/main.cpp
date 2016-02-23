@@ -6,21 +6,14 @@
 //  Copyright © 2016 Damien Katz. All rights reserved.
 //
 
-#include <iostream>
-#include <string>
-#include <stack>
-#include <list>
-#include <memory>
-#include <sstream>
 #include <fstream>
 #include "noise.h"
-#include "query.hpp"
-#include "results.hpp"
+#include "query.h"
+#include "results.h"
 
 
 
 int main(int argc, const char * argv[]) {
-    // Really, this much code to read file into a string?
     std::ifstream querystream("testqueries.txt");
 
     std::string line;
@@ -38,7 +31,7 @@ int main(int argc, const char * argv[]) {
         if (line.size() != 0 && line.find("//") != 0) {
             Noise::Query query(line);
 
-            std::unique_ptr<Noise::Results> results(query.Execute(&index));
+            unique_ptr<Noise::Results> results(query.Execute(&index));
 
             uint64_t seq;
             std::string id;

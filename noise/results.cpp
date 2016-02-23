@@ -6,12 +6,9 @@
 //  Copyright © 2016 Damien Katz. All rights reserved.
 //
 
-#include <vector>
-#include <list>
-#include <string>
-
-#include "query.hpp"
-#include "results.hpp"
+#include "noise.h"
+#include "query.h"
+#include "results.h"
 
 
 namespace_Noise

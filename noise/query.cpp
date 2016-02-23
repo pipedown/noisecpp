@@ -6,62 +6,30 @@
 //  Copyright © 2015 Damien Katz. All rights reserved.
 //
 
-#include <iostream>
-#include <stack>
-#include <string>
-#include <set>
-#include <list>
-#include <memory>
+
+
 #include <sstream>
 #include "records.pb.h"
-#include <rocksdb/db.h>
-#include "query.hpp"
-#include "results.hpp"
-#include "stemmed_key.h"
-#include "porter.h"
+#include "noise.h"
+#include "query.h"
+#include "results.h"
+#include "key_builder.h"
+#include "stems.h"
 
 namespace_Noise
-
-using std::unique_ptr;
-
-class ASTLiteral;
-
-static const std::string emptystr("");
-
-/*
- 'sometext and 23hit'
-
- sometext
- uint64 stemmedOffset 0;
- int64 suffixOffset  8
- string suffixText;  " "
-
- and
- uint64 stemmedOffset 9;
- int64 suffixOffset  12
- string suffixText;  " "
-
- hit
- uint64 stemmedOffset 15;
- int64 suffixOffset  13
- string suffixText;  " "
-
- */
-
-
 
 class ExactWordMatchFilter : public QueryRuntimeFilter {
     size_t stemmed_offset_;
     std::string suffix_;
     size_t suffix_offset_;
 
-    StemmedKeyBuilder key_build_;
+    KeyBuilder key_build_;
 
     unique_ptr<rocksdb::Iterator> iter_;
 public:
     ExactWordMatchFilter(unique_ptr<rocksdb::Iterator>& iter,
                          StemmedWord& stemmed_word,
-                         StemmedKeyBuilder& key_build)
+                         KeyBuilder& key_build)
         : iter_(std::move(iter)), stemmed_offset_(stemmed_word.stemmed_offset),
           suffix_(stemmed_word.suffix, stemmed_word.suffix_len),
           key_build_(key_build), suffix_offset_(stemmed_word.suffix_offset)
@@ -77,10 +45,10 @@ public:
         key_build_.PushDocSeq(startId);
 
         // seek in index to GTE entry
-        iter_->Seek(key_build_.Key());
+        iter_->Seek(key_build_.key());
 
         //revert
-        key_build_.Pop(StemmedKeyBuilder::DocSeq);
+        key_build_.Pop(KeyBuilder::DocSeq);
 
         return NextResult();
     }
@@ -95,19 +63,18 @@ public:
 
             rocksdb::Slice key = iter_->key(); // start off as full path
 
-            if (!key.starts_with(key_build_.Key()))
+            if (!key.starts_with(key_build_.key()))
                 // prefix no longer matches. all out of stuff to return.
                 return nullptr;
 
-            // remove prefix from id as it should be
-            key.remove_prefix(key_build_.Key().size());
+            // remove prefix from key so we have the doc seq
+            key.remove_prefix(key_build_.key().size());
 
             std::string data = iter_->value().ToString();
 
             records::payload payload;
             if(!payload.ParseFromArray(data.c_str(), (int)data.length()))
                 throw std::runtime_error("Couldn't parse proto buf");
-
 
             for (auto aos_wis : payload.arrayoffsets_to_wordinfos()) {
                 for (auto wi : aos_wis.wordinfos()) {
@@ -128,7 +95,6 @@ loopdone:
             iter_->Next();
 
             if (dr->array_paths.size() != 0)
-                // record the doc id before we return
                 return dr;
         }
         return nullptr;
@@ -151,10 +117,11 @@ public:
         : filters_(std::move(filters)), filter_(filters_->begin()),
           match_array_depth_(match_array_depth) {}
 
-    virtual std::unique_ptr<DocResult> FirstResult(uint64_t advance) {
+    virtual unique_ptr<DocResult> FirstResult(uint64_t advance) {
         auto base_result = filter_->get()->FirstResult(advance);
         return std::move(Result(base_result));
     }
+
     virtual unique_ptr<DocResult> NextResult() {
         auto base_result = filter_->get()->NextResult();
         return std::move(Result(base_result));
@@ -195,31 +162,27 @@ public:
 };
 
 
-
-
 class SnapshopIteratorCreator {
     rocksdb::ReadOptions options_;
     rocksdb::DB* db_;
 public:
-    SnapshopIteratorCreator(rocksdb::DB* db)
-        : db_(db)
-    {
+    SnapshopIteratorCreator(rocksdb::DB* db) : db_(db) {
         options_.snapshot = db_->GetSnapshot();
     }
     ~SnapshopIteratorCreator() {
         db_->ReleaseSnapshot(options_.snapshot);
     }
 
-    std::unique_ptr<rocksdb::Iterator> NewIterator() {
-        return std::unique_ptr<rocksdb::Iterator>(db_->NewIterator(options_));
+    unique_ptr<rocksdb::Iterator> NewIterator() {
+        return unique_ptr<rocksdb::Iterator>(db_->NewIterator(options_));
     }
 
 };
 
-std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
-                                            StemmedKeyBuilder& key,
-                                            ASTNode* node,
-                                            size_t array_depth) {
+unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
+                                       KeyBuilder& key,
+                                       ASTNode* node,
+                                       size_t array_depth) {
     switch (node->type) {
         case ASTNode::EQUALS: {
             assert(node->children.size() == 2);
@@ -239,10 +202,10 @@ std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
             key.PushObjectKey(fieldname->value);
             while (stems.HasMore()) {
                 StemmedWord stem = stems.Next();
-                std::unique_ptr<rocksdb::Iterator> itor(ic.NewIterator());
+                unique_ptr<rocksdb::Iterator> itor(ic.NewIterator());
                 filters->emplace_back(new ExactWordMatchFilter(itor, stem, key));
             }
-            key.Pop(StemmedKeyBuilder::ObjectKey);
+            key.Pop(KeyBuilder::ObjectKey);
             if (filters->size() == 1)
                 return std::move(filters->front());
             else
@@ -268,8 +231,8 @@ std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
                                                          key,
                                                          node->children[0].get(),
                                                          array_depth + 1));
-            key.Pop(StemmedKeyBuilder::Array);
-            key.Pop(StemmedKeyBuilder::ObjectKey);
+            key.Pop(KeyBuilder::Array);
+            key.Pop(KeyBuilder::ObjectKey);
             return ret;
         }
         case ASTNode::FIELD:
@@ -283,16 +246,14 @@ std::unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
         
 }
 
-std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr);
+unique_ptr<ASTNode> BuildTree(std::string& tokenstr);
 
 
-Query::Query(std::string& str) : root(BuildTree(str)) {
+Query::Query(std::string& str) : root(BuildTree(str)) {}
 
-}
-
-std::unique_ptr<Results> Query::Execute(Index* index) {
+unique_ptr<Results> Query::Execute(Index* index) {
     SnapshopIteratorCreator ic(index->GetDB());
-    StemmedKeyBuilder keybuild;
+    KeyBuilder keybuild;
     unique_ptr<QueryRuntimeFilter> filter(WalkAST(ic, keybuild, root.get(), 0));
 
     return unique_ptr<Results> (new Results(filter));
@@ -300,13 +261,13 @@ std::unique_ptr<Results> Query::Execute(Index* index) {
 
 /* this is placehilder code until we have a parser. */
 
-std::unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
+unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
     std::stringstream tokens(tokenstr);
     std::string token;
-    std::stack<std::unique_ptr<ASTNode> > stack;
-    std::unique_ptr<ASTNode> node;
+    std::stack<unique_ptr<ASTNode> > stack;
+    unique_ptr<ASTNode> node;
     while (std::getline(tokens, token, ' ')) {
-        node = std::unique_ptr<ASTNode>(new ASTNode);
+        node = unique_ptr<ASTNode>(new ASTNode);
         node->value = token;
         char c = token.front();
         switch (c) {

@@ -16,6 +16,8 @@
 		DF3380781C4F405800AD95B3 /* records.proto in Sources */ = {isa = PBXBuildFile; fileRef = DF788A351C1A9309002CEF85 /* records.proto */; };
 		DF3380791C4F405800AD95B3 /* porter.c in Sources */ = {isa = PBXBuildFile; fileRef = DF788A441C1ACE7A002CEF85 /* porter.c */; };
 		DF33807C1C4F441B00AD95B3 /* testqueries.txt in Copy Files */ = {isa = PBXBuildFile; fileRef = DF3380631C30DF4200AD95B3 /* testqueries.txt */; };
+		DF5DB3511C7C51C800591D07 /* stems.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF5DB3501C7C51C800591D07 /* stems.cpp */; };
+		DF5DB3521C7C51C800591D07 /* stems.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF5DB3501C7C51C800591D07 /* stems.cpp */; };
 		DF788A2B1C1A48A4002CEF85 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A2A1C1A48A4002CEF85 /* main.cpp */; };
 		DF788A391C1A9E58002CEF85 /* index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A321C1A7AE0002CEF85 /* index.cpp */; };
 		DF788A401C1AAA7F002CEF85 /* records.proto in Sources */ = {isa = PBXBuildFile; fileRef = DF788A351C1A9309002CEF85 /* records.proto */; };
@@ -80,23 +82,25 @@
 /* Begin PBXFileReference section */
 		DF3380631C30DF4200AD95B3 /* testqueries.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testqueries.txt; sourceTree = "<group>"; };
 		DF3380641C30F0E800AD95B3 /* query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = query.cpp; sourceTree = "<group>"; };
-		DF3380651C30F0E800AD95B3 /* query.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = query.hpp; sourceTree = "<group>"; };
+		DF3380651C30F0E800AD95B3 /* query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query.h; sourceTree = "<group>"; };
 		DF33806B1C46F4E600AD95B3 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF33806D1C46F4E600AD95B3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DF534C071C1CFF5E005450B4 /* testdata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = testdata.json; sourceTree = "<group>"; };
+		DF5DB34F1C7C505F00591D07 /* stems.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stems.h; sourceTree = "<group>"; };
+		DF5DB3501C7C51C800591D07 /* stems.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stems.cpp; sourceTree = "<group>"; };
 		DF788A271C1A48A4002CEF85 /* noise */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = noise; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF788A2A1C1A48A4002CEF85 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DF788A311C1A75C5002CEF85 /* noise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = noise.h; sourceTree = "<group>"; };
 		DF788A321C1A7AE0002CEF85 /* index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = index.cpp; sourceTree = "<group>"; };
 		DF788A351C1A9309002CEF85 /* records.proto */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; path = records.proto; sourceTree = "<group>"; };
 		DF788A411C1AC5BA002CEF85 /* json_shred.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_shred.cpp; sourceTree = "<group>"; };
-		DF788A421C1AC5BA002CEF85 /* json_shred.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json_shred.hpp; sourceTree = "<group>"; };
+		DF788A421C1AC5BA002CEF85 /* json_shred.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_shred.h; sourceTree = "<group>"; };
 		DF788A441C1ACE7A002CEF85 /* porter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = porter.c; sourceTree = "<group>"; };
 		DF788A461C1ACE81002CEF85 /* porter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = porter.h; sourceTree = "<group>"; };
 		DFE82D3F1C65C6A000B5E17E /* results.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = results.cpp; sourceTree = "<group>"; };
-		DFE82D401C65C6A000B5E17E /* results.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = results.hpp; sourceTree = "<group>"; };
+		DFE82D401C65C6A000B5E17E /* results.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = results.h; sourceTree = "<group>"; };
 		DFE82D441C65E9C300B5E17E /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
-		DFE82D461C7583DC00B5E17E /* stemmed_key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stemmed_key.h; sourceTree = "<group>"; };
+		DFE82D461C7583DC00B5E17E /* key_builder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = key_builder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,15 +156,17 @@
 				DF788A321C1A7AE0002CEF85 /* index.cpp */,
 				DF3380631C30DF4200AD95B3 /* testqueries.txt */,
 				DF3380641C30F0E800AD95B3 /* query.cpp */,
-				DF3380651C30F0E800AD95B3 /* query.hpp */,
+				DF3380651C30F0E800AD95B3 /* query.h */,
 				DFE82D3F1C65C6A000B5E17E /* results.cpp */,
-				DFE82D401C65C6A000B5E17E /* results.hpp */,
+				DFE82D401C65C6A000B5E17E /* results.h */,
 				DF788A411C1AC5BA002CEF85 /* json_shred.cpp */,
-				DF788A421C1AC5BA002CEF85 /* json_shred.hpp */,
-				DFE82D461C7583DC00B5E17E /* stemmed_key.h */,
+				DF788A421C1AC5BA002CEF85 /* json_shred.h */,
+				DFE82D461C7583DC00B5E17E /* key_builder.h */,
 				DF788A351C1A9309002CEF85 /* records.proto */,
 				DF788A441C1ACE7A002CEF85 /* porter.c */,
 				DF788A461C1ACE81002CEF85 /* porter.h */,
+				DF5DB34F1C7C505F00591D07 /* stems.h */,
+				DF5DB3501C7C51C800591D07 /* stems.cpp */,
 				DF534C071C1CFF5E005450B4 /* testdata.json */,
 			);
 			path = noise;
@@ -251,6 +257,7 @@
 				DF3380761C4F405800AD95B3 /* json_shred.cpp in Sources */,
 				DF3380781C4F405800AD95B3 /* records.proto in Sources */,
 				DF3380791C4F405800AD95B3 /* porter.c in Sources */,
+				DF5DB3521C7C51C800591D07 /* stems.cpp in Sources */,
 				DF33806E1C46F4E600AD95B3 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF788A401C1AAA7F002CEF85 /* records.proto in Sources */,
+				DF5DB3511C7C51C800591D07 /* stems.cpp in Sources */,
 				DFE82D451C65E9C300B5E17E /* readme.md in Sources */,
 				DFE82D411C65C6A000B5E17E /* results.cpp in Sources */,
 				DF788A2B1C1A48A4002CEF85 /* main.cpp in Sources */,
