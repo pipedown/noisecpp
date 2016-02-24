@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		DF3380621C1D10DA00AD95B3 /* testdata.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = DF534C071C1CFF5E005450B4 /* testdata.json */; };
 		DF3380661C30F0E800AD95B3 /* query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF3380641C30F0E800AD95B3 /* query.cpp */; };
-		DF33806E1C46F4E600AD95B3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF33806D1C46F4E600AD95B3 /* main.cpp */; };
+		DF33806E1C46F4E600AD95B3 /* query_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF33806D1C46F4E600AD95B3 /* query_main.cpp */; };
 		DF3380731C4F405800AD95B3 /* index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A321C1A7AE0002CEF85 /* index.cpp */; };
 		DF3380741C4F405800AD95B3 /* query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF3380641C30F0E800AD95B3 /* query.cpp */; };
 		DF3380761C4F405800AD95B3 /* json_shred.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A411C1AC5BA002CEF85 /* json_shred.cpp */; };
@@ -18,7 +18,7 @@
 		DF33807C1C4F441B00AD95B3 /* testqueries.txt in Copy Files */ = {isa = PBXBuildFile; fileRef = DF3380631C30DF4200AD95B3 /* testqueries.txt */; };
 		DF5DB3511C7C51C800591D07 /* stems.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF5DB3501C7C51C800591D07 /* stems.cpp */; };
 		DF5DB3521C7C51C800591D07 /* stems.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF5DB3501C7C51C800591D07 /* stems.cpp */; };
-		DF788A2B1C1A48A4002CEF85 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A2A1C1A48A4002CEF85 /* main.cpp */; };
+		DF788A2B1C1A48A4002CEF85 /* index_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A2A1C1A48A4002CEF85 /* index_main.cpp */; };
 		DF788A391C1A9E58002CEF85 /* index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A321C1A7AE0002CEF85 /* index.cpp */; };
 		DF788A401C1AAA7F002CEF85 /* records.proto in Sources */ = {isa = PBXBuildFile; fileRef = DF788A351C1A9309002CEF85 /* records.proto */; };
 		DF788A431C1AC5BA002CEF85 /* json_shred.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF788A411C1AC5BA002CEF85 /* json_shred.cpp */; };
@@ -83,12 +83,12 @@
 		DF3380641C30F0E800AD95B3 /* query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = query.cpp; sourceTree = "<group>"; };
 		DF3380651C30F0E800AD95B3 /* query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query.h; sourceTree = "<group>"; };
 		DF33806B1C46F4E600AD95B3 /* query */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = query; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF33806D1C46F4E600AD95B3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		DF33806D1C46F4E600AD95B3 /* query_main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = query_main.cpp; sourceTree = "<group>"; };
 		DF534C071C1CFF5E005450B4 /* testdata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = testdata.json; sourceTree = "<group>"; };
 		DF5DB34F1C7C505F00591D07 /* stems.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stems.h; sourceTree = "<group>"; };
 		DF5DB3501C7C51C800591D07 /* stems.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stems.cpp; sourceTree = "<group>"; };
 		DF788A271C1A48A4002CEF85 /* index */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = index; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF788A2A1C1A48A4002CEF85 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		DF788A2A1C1A48A4002CEF85 /* index_main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = index_main.cpp; sourceTree = "<group>"; };
 		DF788A311C1A75C5002CEF85 /* noise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = noise.h; sourceTree = "<group>"; };
 		DF788A321C1A7AE0002CEF85 /* index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = index.cpp; sourceTree = "<group>"; };
 		DF788A351C1A9309002CEF85 /* records.proto */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; path = records.proto; sourceTree = "<group>"; };
@@ -120,23 +120,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DF33806C1C46F4E600AD95B3 /* query */ = {
-			isa = PBXGroup;
-			children = (
-				DF33806D1C46F4E600AD95B3 /* main.cpp */,
-			);
-			name = query;
-			path = ../test;
-			sourceTree = "<group>";
-		};
-		DF5DB3531C7DB09B00591D07 /* index */ = {
-			isa = PBXGroup;
-			children = (
-				DF788A2A1C1A48A4002CEF85 /* main.cpp */,
-			);
-			name = index;
-			sourceTree = "<group>";
-		};
 		DF788A1E1C1A48A4002CEF85 = {
 			isa = PBXGroup;
 			children = (
@@ -158,9 +141,9 @@
 		DF788A291C1A48A4002CEF85 /* noise */ = {
 			isa = PBXGroup;
 			children = (
-				DF5DB3531C7DB09B00591D07 /* index */,
-				DF33806C1C46F4E600AD95B3 /* query */,
 				DF788A311C1A75C5002CEF85 /* noise.h */,
+				DF788A2A1C1A48A4002CEF85 /* index_main.cpp */,
+				DF33806D1C46F4E600AD95B3 /* query_main.cpp */,
 				DF788A321C1A7AE0002CEF85 /* index.cpp */,
 				DF3380631C30DF4200AD95B3 /* testqueries.txt */,
 				DF3380641C30F0E800AD95B3 /* query.cpp */,
@@ -266,7 +249,7 @@
 				DF3380781C4F405800AD95B3 /* records.proto in Sources */,
 				DF3380791C4F405800AD95B3 /* porter.c in Sources */,
 				DF5DB3521C7C51C800591D07 /* stems.cpp in Sources */,
-				DF33806E1C46F4E600AD95B3 /* main.cpp in Sources */,
+				DF33806E1C46F4E600AD95B3 /* query_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,7 +260,7 @@
 				DF788A401C1AAA7F002CEF85 /* records.proto in Sources */,
 				DF5DB3511C7C51C800591D07 /* stems.cpp in Sources */,
 				DFE82D411C65C6A000B5E17E /* results.cpp in Sources */,
-				DF788A2B1C1A48A4002CEF85 /* main.cpp in Sources */,
+				DF788A2B1C1A48A4002CEF85 /* index_main.cpp in Sources */,
 				DF3380661C30F0E800AD95B3 /* query.cpp in Sources */,
 				DF788A431C1AC5BA002CEF85 /* json_shred.cpp in Sources */,
 				DF788A451C1ACE7A002CEF85 /* porter.c in Sources */,
