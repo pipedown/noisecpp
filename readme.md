@@ -7,10 +7,13 @@ What? No idea.
 
 ## Build dependencies:
 * Ummmm.
-* Oh, okay. Xcode, OS X(duh), rocksdb, protobuf, yajl. I used brew.
+* Oh, okay. cmake, rocksdb, protobuf, yajl. I used OSX and brew and Xcode.
 
-## To build:
-xcode: press Build index and query schemes. Would really like someone to create cmake build files.
+## To build in Xcode:
+mkdir build && cd build && cmake -G Xcode .. && open noise.xcodeproj
+
+## To build for Unix Makefiles:
+mkdir build && cd build && cmake ..
 
 ## To run:
 Ummm
