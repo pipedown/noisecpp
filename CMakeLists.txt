@@ -42,11 +42,11 @@ set(common_files_cc
 add_executable(index
   ${common_files_c}
   ${common_files_cc}
-  noise/main.cpp
+  noise/index_main.cpp
 )
 
 add_executable(query
   ${common_files_c}
   ${common_files_cc}
-  test/main.cpp
+  noise/query_main.cpp
 )
