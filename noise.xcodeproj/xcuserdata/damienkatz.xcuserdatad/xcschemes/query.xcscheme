@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DF788A261C1A48A4002CEF85"
-               BuildableName = "noise"
-               BlueprintName = "noise"
+               BlueprintIdentifier = "DF33806A1C46F4E600AD95B3"
+               BuildableName = "query"
+               BlueprintName = "query"
                ReferencedContainer = "container:noise.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF788A261C1A48A4002CEF85"
-            BuildableName = "noise"
-            BlueprintName = "noise"
+            BlueprintIdentifier = "DF33806A1C46F4E600AD95B3"
+            BuildableName = "query"
+            BlueprintName = "query"
             ReferencedContainer = "container:noise.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -55,15 +55,15 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF788A261C1A48A4002CEF85"
-            BuildableName = "noise"
-            BlueprintName = "noise"
+            BlueprintIdentifier = "DF33806A1C46F4E600AD95B3"
+            BuildableName = "query"
+            BlueprintName = "query"
             ReferencedContainer = "container:noise.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-f testdata.json -cd /Users/damienkatz/temprocks"
+            argument = "/Users/damienkatz/temprocks"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -80,9 +80,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF788A261C1A48A4002CEF85"
-            BuildableName = "noise"
-            BlueprintName = "noise"
+            BlueprintIdentifier = "DF33806A1C46F4E600AD95B3"
+            BuildableName = "query"
+            BlueprintName = "query"
             ReferencedContainer = "container:noise.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
