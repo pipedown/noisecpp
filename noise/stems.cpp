@@ -47,6 +47,7 @@ StemmedWord Stems::Next() {
     }
     if (!ret.suffix)
         ret.suffix = current_;
+    ret.suffix_offset = ret.suffix - input_;
     while (current_ < input_end_) {
         //skip non-alpha
         char c = *current_;
@@ -59,9 +60,14 @@ StemmedWord Stems::Next() {
         size_t len = porter_stem_inplace(&tempbuf_.front(),
                                          (int)tempbuf_.size());
         tempbuf_.resize(len);
+        if (ret.stemmed_offset + len < ret.suffix_offset) {
+            ret.suffix_offset = ret.stemmed_offset + len;
+            ret.suffix = input_ + ret.stemmed_offset;
+
+        }
+
     }
     ret.suffix_len = current_ - ret.suffix;
-    ret.suffix_offset = ret.suffix - input_;
     ret.stemmed = &tempbuf_.front();
     ret.stemmed_len = tempbuf_.length();
     return ret;
