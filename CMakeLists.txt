@@ -3,11 +3,8 @@ project(noise)
 
 set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -Wextra")
-set(CMAKE_EXE_LINKER_FLAGS "-lprotobuf -lrocksdb -lyajl")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(noise_VERSION_MAJOR 0)
 set(noise_VERSION_MINOR 1)
-
 
 include_directories(/usr/local/include)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src)
@@ -65,9 +62,8 @@ add_executable(query
   src/query_main.cpp
 )
 
-target_link_libraries(index proto ${PROTOBUF_LIBRARY})
-target_link_libraries(query proto ${PROTOBUF_LIBRARY})
-
+target_link_libraries(index proto ${PROTOBUF_LIBRARY} ${ROCKSDB_LIBRARY} ${YAJL_LIBRARY} )
+target_link_libraries(query proto ${PROTOBUF_LIBRARY} ${ROCKSDB_LIBRARY} ${YAJL_LIBRARY} )
 
 # Tests
 include(CTest)
