@@ -19,20 +19,20 @@
 namespace_Noise
 
 class ExactWordMatchFilter : public QueryRuntimeFilter {
-    size_t stemmed_offset_;
-    std::string suffix_;
-    size_t suffix_offset_;
-
-    KeyBuilder key_build_;
-
     unique_ptr<rocksdb::Iterator> iter_;
+    KeyBuilder key_build_;
+    uint64_t stemmed_offset_;
+    std::string suffix_;
+    uint64_t suffix_offset_;
 public:
     ExactWordMatchFilter(unique_ptr<rocksdb::Iterator>& iter,
                          StemmedWord& stemmed_word,
                          KeyBuilder& key_build)
-        : iter_(std::move(iter)), stemmed_offset_(stemmed_word.stemmed_offset),
+        : iter_(std::move(iter)),
+          key_build_(key_build),
+          stemmed_offset_(stemmed_word.stemmed_offset),
           suffix_(stemmed_word.suffix, stemmed_word.suffix_len),
-          key_build_(key_build), suffix_offset_(stemmed_word.suffix_offset)
+          suffix_offset_(stemmed_word.suffix_offset)
     {
         key_build_.PushWord(stemmed_word.stemmed,
                                  stemmed_word.stemmed_len);
