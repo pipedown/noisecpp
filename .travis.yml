@@ -14,8 +14,12 @@ before_install:
   - sudo apt-get install -y gcc-5 g++-5
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 20
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20
+  - wget http://mirrors.kernel.org/ubuntu/pool/main/g/gflags/libgflags2v5_2.1.2-3_amd64.deb
+  - wget http://mirrors.kernel.org/ubuntu/pool/main/s/snappy/libsnappy1v5_1.1.3-2_amd64.deb
   - wget https://launchpad.net/ubuntu/+source/rocksdb/4.1-1/+build/8982095/+files/librocksdb4.1_4.1-1_amd64.deb
   - wget https://launchpad.net/ubuntu/+source/rocksdb/4.1-1/+build/8982095/+files/librocksdb-dev_4.1-1_amd64.deb
+  - sudo dpkg -i ./libgflags2v5_2.1.2-3_amd64.deb
+  - sudo dpkg -i ./libsnappy1v5_1.1.3-2_amd64.deb
   - sudo dpkg -i ./librocksdb4.1_4.1-1_amd64.deb
   - sudo dpkg -i ./librocksdb-dev_4.1-1_amd64.deb
 
