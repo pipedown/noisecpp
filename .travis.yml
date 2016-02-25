@@ -3,7 +3,7 @@ language: cpp
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y cmake protobuf-compiler libyajl-dev  zlib1g-dev libbz2-dev libsnappy-dev
-  - git clone https://github.com/facebook/rocksdb.git && cd rocksdb && ./configure && make && sudo make install
+  - git clone https://github.com/facebook/rocksdb.git && cd rocksdb && mkdir build && cd build && cmake .. && make -j6 && sudo make install
 
 before_script:
   - mkdir build && cd build && cmake ..
