@@ -13,14 +13,14 @@ What? No idea.
 * Oh, okay. cmake, rocksdb, protobuf, yajl. I used OSX and brew and Xcode.
 
 ## To build in Xcode:
-mkdir build && cd build && cmake -G Xcode .. && open noise.xcodeproj
+* mkdir build && cd build && cmake -G Xcode .. && open noise.xcodeproj
 
 ## To build for Unix Makefiles:
-mkdir build && cd build && cmake .. && make -j5
+* mkdir build && cd build && cmake .. && make -j5
 
 ## To test:
-make test
-ctest
+* make test
+* ctest
 
 ## HTTP commands:
 * HAHA I make joke.
