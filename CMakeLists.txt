@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(noise)
 
 set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -Wextra")
-set(noise_VERSION_MAJOR 0)
-set(noise_VERSION_MINOR 1)
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 1)
+set(VERSION_ABI 1)
 
 include_directories(/usr/local/include)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src)
