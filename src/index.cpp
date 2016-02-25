@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "noise.h"
-#include "records.pb.h"
+#include "proto/records.pb.h"
 #include "key_builder.h"
 #include "json_shred.h"
 #include "porter.h"

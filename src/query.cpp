@@ -9,7 +9,7 @@
 
 
 #include <sstream>
-#include "records.pb.h"
+#include "proto/records.pb.h"
 #include "noise.h"
 #include "query.h"
 #include "results.h"
