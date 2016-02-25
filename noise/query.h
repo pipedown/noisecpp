@@ -12,7 +12,7 @@
 
 namespace_Noise
 
-class DocResult;
+struct DocResult;
 class Results;
 
 struct ASTNode {
