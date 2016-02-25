@@ -11,7 +11,7 @@ message arrayoffsets_to_wordinfo {
 
     message wordinfo {
         required uint64 stemmedOffset = 1;
-        required int64 suffixOffset = 2;
+        required uint64 suffixOffset = 2;
         required string suffixText = 3;
     }
 

@@ -63,7 +63,6 @@ StemmedWord Stems::Next() {
         if (ret.stemmed_offset + len < ret.suffix_offset) {
             ret.suffix_offset = ret.stemmed_offset + len;
             ret.suffix = input_ + ret.stemmed_offset;
-
         }
 
     }
