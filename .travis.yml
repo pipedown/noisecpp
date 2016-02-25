@@ -9,7 +9,7 @@ before_install:
 
   # travis-ci is based on Ubuntu 14.04 LTS Trusty which ships 2.0.1 with an outdated api.
   # Compiling libyajl is fast, so do that.
-  - git clone https://github.com/lloyd/yajl.git && cd yajl && mkdir build && cd build && cmake .. && make -j6 && make install
+  - git clone https://github.com/lloyd/yajl.git && cd yajl && mkdir build && cd build && cmake .. && make -j6 && sudo make install
 
   - sudo apt-get install -y gcc-5 g++-5
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 20
