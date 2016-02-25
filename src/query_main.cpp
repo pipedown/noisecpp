@@ -69,7 +69,7 @@ int main(int argc, char * const argv[]) {
         return 1;
     }
 
-    while (std::getline(in, line)) {
+    while (std::getline(std::cin, line)) {
         if (line.size() != 0 && line.find("//") != 0) {
             Noise::Query query(line);
 
