@@ -18,9 +18,6 @@
 
 using Noise::Index;
 using Noise::OpenOptions;
-
-extern char **environ;
-
 int main(int argc, char * const argv[]) {
     opterr = 0;
     OpenOptions openOptions = OpenOptions::None;
@@ -44,7 +41,7 @@ int main(int argc, char * const argv[]) {
         {
             in.open(optarg);
             if (!in.is_open()) {
-                fprintf(stderr, "Uable to open '-%s'.\n", optarg);
+                fprintf(stderr, "Unable to open '-%s'.\n", optarg);
                 return 1;
             }
             std::cin.rdbuf(in.rdbuf()); //redirect std::cin
@@ -93,17 +90,6 @@ int main(int argc, char * const argv[]) {
     }
 
     rocksdb::Status status = index.Flush();
-
-
-    rocksdb::ReadOptions read;
-    rocksdb::Iterator* i = index.GetDB()->NewIterator(read);
-
-    i->SeekToFirst();
-
-    while (i->Valid()) {
-        printf("key: %s\n", i->key().ToString().c_str());
-        i->Next();
-    }
 
     assert(status.ok());
 
