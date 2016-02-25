@@ -70,11 +70,6 @@ target_link_libraries(query proto ${PROTOBUF_LIBRARY})
 
 
 # Tests
-#include(CTest)
-#enable_testing()
-
-#find_program (BASH_PROGRAM bash)
-
-#if (BASH_PROGRAM)
-  #add_test (test0 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/test/test.sh)
-#endif (BASH_PROGRAM)
+include(CTest)
+enable_testing()
+add_test (test0 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/test/test.sh ${CMAKE_CURRENT_BINARY_DIR}/index ${CMAKE_CURRENT_BINARY_DIR}/query)

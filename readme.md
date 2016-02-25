@@ -15,8 +15,9 @@ mkdir build && cd build && cmake -G Xcode .. && open noise.xcodeproj
 ## To build for Unix Makefiles:
 mkdir build && cd build && cmake .. && make -j5
 
-## To run:
-Ummm
+## To test:
+make test
+ctest
 
 ## HTTP commands:
 * HAHA I make joke.
