@@ -1,0 +1,11 @@
+[package]
+name = "parser"
+version = "0.1.0"
+authors = ["Doug Coleman <doug.coleman@gmail.com>"]
+
+[lib]
+name = "parser"
+path = "src/parser.rs"
+crate-type = ["dylib", "staticlib"]
+
+[dependencies]
