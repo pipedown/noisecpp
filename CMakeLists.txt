@@ -11,6 +11,7 @@ set(VERSION_ABI 1)
 include_directories(/usr/local/include)
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 link_directories(/usr/local/lib)
 add_subdirectory(src/proto)
 
@@ -21,6 +22,17 @@ include(Findrocksdb)
 find_package(rocksdb REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Yajl REQUIRED)
+find_package(rustc)
+find_package(rustdoc)
+find_package(cargo)
+include(Rust)
+
+rust_crate(src/parser/src/parser.rs
+           ALL
+           TARGET_NAME PARSERLIB
+           DESTINATION parser
+           OTHER_RUSTC_FLAGS --crate-type dylib --crate-type rlib)
+
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${YAJL_INCLUDE_DIR})
 
@@ -64,8 +76,8 @@ add_executable(query
   src/query_main.cpp
 )
 
-target_link_libraries(index proto ${PROTOBUF_LIBRARY} ${ROCKSDB_LIBRARY} ${YAJL_LIBRARY} )
-target_link_libraries(query proto ${PROTOBUF_LIBRARY} ${ROCKSDB_LIBRARY} ${YAJL_LIBRARY} )
+target_link_libraries(index proto ${PROTOBUF_LIBRARY} ${ROCKSDB_LIBRARY} ${YAJL_LIBRARY} ${PARSERLIB_ARTIFACTS} )
+target_link_libraries(query proto ${PROTOBUF_LIBRARY} ${ROCKSDB_LIBRARY} ${YAJL_LIBRARY} ${PARSERLIB_ARTIFACTS} )
 
 # Tests
 include(CTest)
