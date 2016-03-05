@@ -3,3 +3,4 @@ build-unix/
 *.swp
 test/testindex/
 Cargo.lock
+/target/
