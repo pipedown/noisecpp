@@ -22,29 +22,6 @@ include(Findrocksdb)
 find_package(rocksdb REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Yajl REQUIRED)
-find_package(rustc)
-find_package(rustdoc)
-find_package(cargo)
-include(Rust)
-
-# test parser, please ignore
-rust_crate(src/parser/src/parser.rs
-           ALL
-           TARGET_NAME PARSERLIB
-           DESTINATION parser
-           OTHER_RUSTC_FLAGS --crate-type dylib --crate-type rlib)
-
-# qp - query parsing language
-rust_crate(src/qp/src/main.rs
-           ALL
-           TARGET_NAME QPLIB
-           DESTINATION qplib
-           OTHER_RUSTC_FLAGS --crate-type dylib --crate-type rlib -L ${CMAKE_CURRENT_BINARY_DIR}/qp/target/debug/deps)
-
-cargo_dependency(qp
-	PACKAGE_NAMES peg
-	PACKAGE_VERSIONS 0.3.10)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/qp/target/debug/deps)
 
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${YAJL_INCLUDE_DIR})
