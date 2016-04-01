@@ -24,11 +24,13 @@ private:
         SegmentType type;
         size_t offset;
     };
-    std::vector<Segment> segments_;
 
+    size_t array_depth_;
+    std::vector<Segment> segments_;
     std::string fullkey_;
+
 public:
-    KeyBuilder() {
+    KeyBuilder() : array_depth_(0) {
         segments_.reserve(10);
         fullkey_.reserve(100); //magic reserve numbers that are completely arbitrary
         fullkey_ = "W"; // first char is keyspace identifier. W means Word keyspace
@@ -73,6 +75,7 @@ public:
                segments_.back().type == Array);
         segments_.push_back({Array, fullkey_.size()});
         fullkey_.push_back('$');
+        array_depth_++;
     }
 
     void PushWord(const char* stemmedword, size_t len) {
@@ -90,10 +93,33 @@ public:
         fullkey_ += std::to_string(seq);
     }
 
-    void Pop(SegmentType expected_type) {
-        assert(segments_.back().type == expected_type);
+    void PopObjectKey() {
+        assert(segments_.back().type == ObjectKey);
         fullkey_.resize(segments_.back().offset);
         segments_.pop_back();
+    }
+
+    void PopArray() {
+        assert(segments_.back().type == Array);
+        fullkey_.resize(segments_.back().offset);
+        array_depth_--;
+        segments_.pop_back();
+    }
+
+    void PopWord() {
+        assert(segments_.back().type == Word);
+        fullkey_.resize(segments_.back().offset);
+        segments_.pop_back();
+    }
+
+    void PopDocSeq() {
+        assert(segments_.back().type == DocSeq);
+        fullkey_.resize(segments_.back().offset);
+        segments_.pop_back();
+    }
+
+    size_t ArrayDepth() {
+        return array_depth_;
     }
 
     SegmentType LastPushedSegmentType() {

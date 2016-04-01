@@ -42,9 +42,9 @@ void ParseCtx::AddEntries(const char* text, size_t textLen) {
         map[keybuilder.key()][pathArrayOffsets]
             .push_back({word.stemmed_offset,
                         std::string(word.suffix, word.suffix_len),
-                        long(word.suffix_offset - word.stemmed_offset)});
-        keybuilder.Pop(KeyBuilder::DocSeq);
-        keybuilder.Pop(KeyBuilder::Word);
+                        word.suffix_offset});
+        keybuilder.PopDocSeq();
+        keybuilder.PopWord();
     }
 }
 
@@ -159,7 +159,7 @@ static int callback_map_key(void* v, const unsigned char * keyVal,
         }
 
         // pop the dummy value
-        ctx.keybuilder.Pop(KeyBuilder::ObjectKey);
+        ctx.keybuilder.PopObjectKey();
 
         // push the real value
         ctx.keybuilder.PushObjectKey((char*)keyVal, keyLen);
@@ -199,7 +199,7 @@ static int callback_end_map(void * v)
             ctx.ignoreChildren--;
             return 1;
         }
-        ctx.keybuilder.Pop(KeyBuilder::ObjectKey);
+        ctx.keybuilder.PopObjectKey();
 
         return 1;
     } catch (std::exception& ) {
@@ -234,7 +234,7 @@ static int callback_end_array(void * v)
     try {
         ParseCtx& ctx = *(ParseCtx*)v;
         ctx.pathArrayOffsets.pop_back();
-        ctx.keybuilder.Pop(KeyBuilder::Array);
+        ctx.keybuilder.PopArray();
         if (ctx.ignoreChildren) {
             ctx.ignoreChildren--;
             return 1;
@@ -332,8 +332,8 @@ bool JsonShredder::Shred(uint64_t docseq,
 }
 
 void JsonShredder::AddToBatch(rocksdb::WriteBatch* batch) {
-    records::payload pbpayload;
     for (auto wordPathInfos : ctx_.map) {
+        records::payload pbpayload;
         auto* pbarrayoffsets_to_wordinfo =
                                     pbpayload.add_arrayoffsets_to_wordinfos();
         for (auto arrayOffsetsInfos : wordPathInfos.second) {

@@ -18,6 +18,8 @@
 
 namespace_Noise
 
+
+
 class ExactWordMatchFilter : public QueryRuntimeFilter {
     unique_ptr<rocksdb::Iterator> iter_;
     KeyBuilder key_build_;
@@ -28,14 +30,14 @@ public:
     ExactWordMatchFilter(unique_ptr<rocksdb::Iterator>& iter,
                          StemmedWord& stemmed_word,
                          KeyBuilder& key_build)
-        : iter_(std::move(iter)),
-          key_build_(key_build),
-          stemmed_offset_(stemmed_word.stemmed_offset),
-          suffix_(stemmed_word.suffix, stemmed_word.suffix_len),
-          suffix_offset_(stemmed_word.suffix_offset)
+    : iter_(std::move(iter)),
+    key_build_(key_build),
+    stemmed_offset_(stemmed_word.stemmed_offset),
+    suffix_(stemmed_word.suffix, stemmed_word.suffix_len),
+    suffix_offset_(stemmed_word.suffix_offset)
     {
         key_build_.PushWord(stemmed_word.stemmed,
-                                 stemmed_word.stemmed_len);
+                            stemmed_word.stemmed_len);
     }
 
     ExactWordMatchFilter& operator=(ExactWordMatchFilter const&) = delete;
@@ -48,7 +50,7 @@ public:
         iter_->Seek(key_build_.key());
 
         //revert
-        key_build_.Pop(KeyBuilder::DocSeq);
+        key_build_.PopDocSeq();
 
         return NextResult();
     }
@@ -91,7 +93,7 @@ public:
                     }
                 }
             }
-loopdone:
+        loopdone:
             iter_->Next();
 
             if (dr->array_paths.size() != 0)
@@ -114,8 +116,8 @@ class AndFilter : public QueryRuntimeFilter {
 public:
     AndFilter(unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > >& filters,
               size_t match_array_depth)
-        : filters_(std::move(filters)), filter_(filters_->begin()),
-          match_array_depth_(match_array_depth) {}
+    : filters_(std::move(filters)), filter_(filters_->begin()),
+    match_array_depth_(match_array_depth) {}
 
     virtual unique_ptr<DocResult> FirstResult(uint64_t advance) {
         auto base_result = filter_->get()->FirstResult(advance);
@@ -162,6 +164,7 @@ public:
 };
 
 
+
 class SnapshopIteratorCreator {
     rocksdb::ReadOptions options_;
     rocksdb::DB* db_;
@@ -179,154 +182,225 @@ public:
 
 };
 
-unique_ptr<QueryRuntimeFilter> WalkAST(SnapshopIteratorCreator& ic,
-                                       KeyBuilder& key,
-                                       ASTNode* node,
-                                       size_t array_depth) {
-    switch (node->type) {
-        case ASTNode::EQUALS: {
-            assert(node->children.size() == 2);
-            ASTNode* fieldname;
-            ASTNode* textliteral;
-            if (node->children[0]->type == ASTNode::FIELD) {
-                fieldname = node->children[0].get();
-                textliteral = node->children[1].get();
+
+
+/*
+
+ Bool
+ = Compare ("&&" Compare)*
+
+ Compare
+ = Field "==" Integer
+ / Field "[" Bool "]"
+ / Factor
+
+ Factor
+ = "(" Bool ")"
+ / "[" Bool "]"
+
+ Field
+ = [a-z]+
+
+ Integer
+ = [0-9]+
+
+ */
+
+
+class Parser {
+    const std::string& query_str_;
+    const char* next_;
+    KeyBuilder kb_;
+    SnapshopIteratorCreator& ic_;
+
+    class parse_exception : public std::runtime_error {
+    public:
+        parse_exception(const std::string& what) : std::runtime_error(what) {}
+    };
+
+public:
+    Parser(const std::string& query_str, SnapshopIteratorCreator& ic)
+    : query_str_(query_str), ic_(ic)
+    {
+        next_ = query_str_.c_str();
+    }
+
+
+    unique_ptr<QueryRuntimeFilter> BuildFilter(std::string* parse_error) {
+        try {
+            WS();
+            return Bool();
+        } catch (parse_exception& e) {
+            *parse_error = e.what();
+            return nullptr;
+        }
+    }
+
+private:
+
+    void WS() {
+        while (*next_ == ' '  ||
+               *next_ == '\n' ||
+               *next_ == '\t' ||
+               *next_ == '\r') {
+            next_++;
+        }
+    }
+
+    void Error(const std::string& what) {
+        throw parse_exception(what);
+    }
+
+    bool Consume(const char* token) {
+        const char* next = next_;
+        while (*token != 0 && *token == *next) {
+            token++; next++;
+        }
+        if (*token == 0) {
+            next_ = next;
+            WS();
+            return true;
+        }
+        return false;
+    }
+
+    bool CouldConsume(const char* token) {
+        const char* next = next_;
+        if (Consume(token)) {
+            next_ = next; // unconsume
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    bool ConsumeField(std::string* name) {
+        bool result = false;
+        while (isalpha(*next_)) {
+            name->push_back(*next_++);
+            result = true;
+        }
+        WS();
+        return result;
+    }
+
+    bool ConsumeStringLiteral(std::string* lit) {
+        // Does not unescape yet
+        const char* next = next_;
+        if (*next_ == '"') {
+            next_++;
+            while (*next_ != 0 && *next_ != '"') {
+                lit->push_back(*next_++);
+            }
+            if (*next_ == '"') {
+                next_++;
+                WS();
+                return true;
             } else {
-                fieldname = node->children[1].get();
-                textliteral = node->children[0].get();
+                next_ = next;
+                Error("Expected \"");
+                return false;
             }
-            Stems stems(textliteral->value);
-
-            unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters(
-                new std::vector<unique_ptr<QueryRuntimeFilter> >);
-            key.PushObjectKey(fieldname->value);
-            while (stems.HasMore()) {
-                StemmedWord stem = stems.Next();
-                unique_ptr<rocksdb::Iterator> itor(ic.NewIterator());
-                filters->emplace_back(new ExactWordMatchFilter(itor, stem, key));
-            }
-            key.Pop(KeyBuilder::ObjectKey);
-            if (filters->size() == 1)
-                return std::move(filters->front());
-            else
-                return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
-                                                                 array_depth));
-
         }
+        return false;
+    }
 
-        case ASTNode::AND: {
-            unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters(
-                new std::vector<unique_ptr<QueryRuntimeFilter> >);
-            for(auto& child : node->children) {
-                filters->push_back(WalkAST(ic, key, child.get(), array_depth));
+    unique_ptr<QueryRuntimeFilter> Bool() {
+        unique_ptr<QueryRuntimeFilter> left = Compare();
+        unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters;
+        while (Consume("&")) {
+            if (!filters) {
+                filters = unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > >(
+                                                                                    new std::vector<unique_ptr<QueryRuntimeFilter> >);
+                filters->push_back(std::move(left));
             }
+            filters->push_back(Compare());
+        }
+        if (filters)
             return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
-                                                                array_depth));
-        }
-
-        case ASTNode::ARRAY: {
-            key.PushObjectKey(node->value);
-            key.PushArray();
-            unique_ptr<QueryRuntimeFilter> ret(WalkAST(ic,
-                                                         key,
-                                                         node->children[0].get(),
-                                                         array_depth + 1));
-            key.Pop(KeyBuilder::Array);
-            key.Pop(KeyBuilder::ObjectKey);
-            return ret;
-        }
-        case ASTNode::FIELD:
-        case ASTNode::LITERAL:
-        case ASTNode::UNKNOWN:
-        default:
-            assert(false);
-            return nullptr; //placate compiler
+                                                                kb_.ArrayDepth()));
+        else
+            return left;
     }
 
-        
-}
+    unique_ptr<QueryRuntimeFilter> Compare() {
+        std::string field;
+        if (ConsumeField(&field)) {
+            if (Consume(".")) {
+                kb_.PushObjectKey(field);
+                unique_ptr<QueryRuntimeFilter> ret(Compare());
+                kb_.PopObjectKey();
+                return ret;
+            } else if (Consume("=")) {
+                std::string literal;
+                if (!ConsumeStringLiteral(&literal))
+                    Error("value");
 
-unique_ptr<ASTNode> BuildTree(std::string& tokenstr);
+                Stems stems(literal);
+                unique_ptr<std::vector<unique_ptr<QueryRuntimeFilter> > > filters(
+                                                                                  new std::vector<unique_ptr<QueryRuntimeFilter> >);
 
-
-Query::Query(std::string& str) : root(BuildTree(str)) {}
-
-unique_ptr<Results> Query::Execute(Index* index) {
-    SnapshopIteratorCreator ic(index->GetDB());
-    KeyBuilder keybuild;
-    unique_ptr<QueryRuntimeFilter> filter(WalkAST(ic, keybuild, root.get(), 0));
-
-    return unique_ptr<Results> (new Results(filter));
-}
-
-/* this is placehilder code until we have a parser. */
-
-unique_ptr<ASTNode> BuildTree(std::string& tokenstr) {
-    std::stringstream tokens(tokenstr);
-    std::string token;
-    std::stack<unique_ptr<ASTNode> > stack;
-    unique_ptr<ASTNode> node;
-    while (std::getline(tokens, token, ' ')) {
-        node = unique_ptr<ASTNode>(new ASTNode);
-        node->value = token;
-        char c = token.front();
-        switch (c) {
-            case 'F':
-                assert(token == "FIELD");
-                node->type = ASTNode::FIELD;
-                node->value = stack.top()->value;
-                stack.pop();
-                break;
-
-            case 'E':
-                assert(token == "EQUALS");
-                node->type = ASTNode::EQUALS;
-                node->children.push_back(std::move(stack.top()));
-                stack.pop();
-                node->children.push_back(std::move(stack.top()));
-                stack.pop();
-                break;
-
-            case 'A':
-                if (token == "AND") {
-                    node->type = ASTNode::AND;
-                    node->children.push_back(std::move(stack.top()));
-                    stack.pop();
-                    node->children.push_back(std::move(stack.top()));
-                    stack.pop();
-
-                } else if (token == "ARRAY") {
-                    node->type = ASTNode::ARRAY;
-                    node->value = stack.top()->value;
-                    stack.pop();
-                    node->children.push_back(std::move(stack.top()));
-                    stack.pop();
-                } else {
-                    assert(false);
-                    abort();
+                kb_.PushObjectKey(field);
+                while (stems.HasMore()) {
+                    StemmedWord stem = stems.Next();
+                    unique_ptr<rocksdb::Iterator> itor(ic_.NewIterator());
+                    filters->emplace_back(new ExactWordMatchFilter(itor, stem, kb_));
                 }
-                break;
-
-            case '"':
-                assert(token.back() == '"' && token.size() > 1);
-                node->type = ASTNode::LITERAL;
-                // NOTE: does NOT unescape the string, just strips off front and end quote
-                node->value = {token.begin()+1, token.end()-1};
-                break;
-                
-            case '\n':
-            case '/':
-                // comment line, skip
-                std::getline(tokens, token);
-                continue;
-            default:
-                assert(false);
-
+                kb_.PopObjectKey();
+                if (filters->size() == 1)
+                    return std::move(filters->front());
+                else
+                    return unique_ptr<QueryRuntimeFilter>(new AndFilter(filters,
+                                                                        kb_.ArrayDepth()));
+            } else if (CouldConsume("[")) {
+                kb_.PushObjectKey(field);
+                unique_ptr<QueryRuntimeFilter> ret(Array());
+                kb_.PopObjectKey();
+                return ret;
+            }
+            Error("Expected comparison or array operator");
         }
-        stack.push(std::move(node));
+        return Factor();
     }
-    assert(stack.size() == 1);
-    return std::move(stack.top());
+
+    unique_ptr<QueryRuntimeFilter> Array() {
+        if (!Consume("["))
+            Error("[");
+        kb_.PushArray();
+        unique_ptr<QueryRuntimeFilter> filter = Bool();
+        kb_.PopArray();
+        if (!Consume("]"))
+            Error("]");
+        return filter;
+    }
+
+    unique_ptr<QueryRuntimeFilter> Factor() {
+        if (Consume("(")) {
+            unique_ptr<QueryRuntimeFilter> filter = Bool();
+            if (!Consume(")"))
+                Error(")");
+            return filter;
+        } else if (CouldConsume("[")) {
+            return Array();
+        }
+        Error("Missing expression");
+        return nullptr;
+    }
+};
+
+
+
+unique_ptr<Results> Query::GetMatches(const std::string& query,
+                                      Index& index,
+                                      std::string* parse_error) {
+    SnapshopIteratorCreator ic(index.GetDB());
+    Parser p(query, ic);
+    unique_ptr<QueryRuntimeFilter> filter(p.BuildFilter(parse_error));
+    if (filter)
+        return unique_ptr<Results> (new Results(filter));
+    else
+        return nullptr;
 }
 
 

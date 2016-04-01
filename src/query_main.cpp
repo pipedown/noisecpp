@@ -15,12 +15,11 @@
 #include "query.h"
 #include "results.h"
 
-
 int main(int argc, char * const argv[]) {
     opterr = 0;
 
     std::ifstream in;
-
+    
     int c;
     while ((c = getopt(argc, argv, "f:")) != -1) {
         switch (c) {
@@ -58,10 +57,6 @@ int main(int argc, char * const argv[]) {
         return 1;
     }
 
-    std::string line;
-
-    std::getline(in, line);
-
     Noise::Index index;
     std::string error = index.Open(argv[optind]);
     if (error.length()) {
@@ -69,19 +64,26 @@ int main(int argc, char * const argv[]) {
         return 1;
     }
 
+    std::string line;
+
     while (std::getline(std::cin, line)) {
         if (line.size() != 0 && line.find("//") != 0) {
-            Noise::Query query(line);
 
-            unique_ptr<Noise::Results> results(query.Execute(&index));
-
-            uint64_t seq;
-            std::string id;
-            while ((seq = results->GetNext())) {
-                if (index.FetchId(seq, &id))
-                    std::cout << "id: " << id << " seq:" << seq <<"\n";
-                else
-                    std::cout << "Failure to lookup seq " << seq << "\n";
+            std::string parse_err;
+            unique_ptr<Noise::Results> results = Noise::Query::GetMatches(line,
+                                                                          index,
+                                                                          &parse_err);
+            if (results) {
+                uint64_t seq;
+                std::string id;
+                while ((seq = results->GetNext())) {
+                    if (index.FetchId(seq, &id))
+                        std::cout << "id: " << id << " seq:" << seq <<"\n";
+                    else
+                        std::cout << "Failure to lookup seq " << seq << "\n";
+                }
+            } else {
+                std::cerr << "Error parsing query: " << parse_err << "\n";
             }
         }
     }

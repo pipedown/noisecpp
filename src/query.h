@@ -42,11 +42,10 @@ public:
 
 
 class Query {
-    unique_ptr<ASTNode> root;
 public:
-    Query(std::string& query);
-
-    unique_ptr<Results> Execute(Index* index);
+    static unique_ptr<Noise::Results> GetMatches(const std::string& query,
+                                                 Index& index,
+                                                 std::string* parse_err);
 };
 
 namespace_Noise_end

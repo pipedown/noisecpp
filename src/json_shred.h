@@ -20,9 +20,8 @@ struct word_info
     // text is returned.
     std::string suffixText;
 
-    // the start of the suffixText, relative the stemmedOffset, if negative
-    // the suffix starts before the stemmed word (in the case of the leading WS)
-    long suffixOffset;
+    // the start of the suffixText
+    size_t suffixOffset;
 
 };
 

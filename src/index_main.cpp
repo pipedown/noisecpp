@@ -16,8 +16,10 @@
 
 #include "noise.h"
 
+
 using Noise::Index;
 using Noise::OpenOptions;
+
 int main(int argc, char * const argv[]) {
     opterr = 0;
     OpenOptions openOptions = OpenOptions::None;
@@ -79,12 +81,12 @@ int main(int argc, char * const argv[]) {
         return 1;
     }
 
-    // stream shredded docs into in index
+    // stream shredded docs into index
 
     while (!std::cin.eof()) {
         std::string json;
         std::getline(std::cin, json);
-        if (!index.Add(json, &error)) {
+        if (json.length() && !index.Add(json, &error)) {
             fprintf(stderr, "Error processing document: %s\n", error.c_str());
         }
     }
