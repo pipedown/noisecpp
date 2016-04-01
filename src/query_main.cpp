@@ -17,11 +17,12 @@
 
 int main(int argc, char * const argv[]) {
     opterr = 0;
+    int test_mode = 0;
 
     std::ifstream in;
     
     int c;
-    while ((c = getopt(argc, argv, "f:")) != -1) {
+    while ((c = getopt(argc, argv, "f:t")) != -1) {
         switch (c) {
             case 'f':
             {
@@ -33,7 +34,11 @@ int main(int argc, char * const argv[]) {
                 std::cin.rdbuf(in.rdbuf()); //redirect std::cin
                 break;
             }
-
+            case 't':
+            {
+                test_mode = 1;
+                break;
+            }
             case '?':
                 if (optopt == 'f')
                     fprintf(stderr, "Option '-f' requires a filename.\n");
@@ -70,6 +75,13 @@ int main(int argc, char * const argv[]) {
         if (line.size() != 0 && line.find("//") != 0) {
 
             std::string parse_err;
+            if(test_mode) {
+                // result line
+                if(line.length() > 0 && line[0] == ' ') {
+                    continue;
+                }
+                std::cout << line << std::endl;
+            }
             unique_ptr<Noise::Results> results = Noise::Query::GetMatches(line,
                                                                           index,
                                                                           &parse_err);
@@ -78,7 +90,7 @@ int main(int argc, char * const argv[]) {
                 std::string id;
                 while ((seq = results->GetNext())) {
                     if (index.FetchId(seq, &id))
-                        std::cout << "id: " << id << " seq:" << seq <<"\n";
+                        std::cout << " id: " << id << " seq:" << seq <<"\n";
                     else
                         std::cout << "Failure to lookup seq " << seq << "\n";
                 }
