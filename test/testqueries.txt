@@ -1,4 +1,7 @@
 A[B = "B2" & C[ D = "D1" ]]
+ id: 2 seq:2
 A[B = "B2" & C = "C2"]
+ id: 1 seq:1
 A[B = "B1" & C = "C2"]
 A = "Multi word sentence"
+ id: 3 seq:3
